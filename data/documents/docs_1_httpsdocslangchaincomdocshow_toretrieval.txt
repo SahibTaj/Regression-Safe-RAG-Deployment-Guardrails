@@ -1,0 +1,5 @@
+Source: Documentation Web Page
+URL: https://docs.langchain.com/docs/how_to/retrieval
+
+Extracted Text:
+Page Not Found Skip to main content Docs by LangChain home page LangChain + LangGraph Search... ⌘ K Ask AI GitHub Try LangSmith Try LangSmith Search... Navigation Page Not Found LangChain LangGraph Deep Agents Integrations Learn Reference Contribute Python Overview Get started Install Quickstart Changelog Philosophy Core components Agents Models Messages Tools Short-term memory Streaming Structured output Middleware Overview Built-in middleware Custom middleware Advanced usage Guardrails Runtime Context engineering Model Context Protocol (MCP) Human-in-the-loop Multi-agent Retrieval Long-term memory Agent development LangSmith Studio Test Agent Chat UI Deploy with LangSmith Deployment Observability 404 Page not found We couldn’t find the page you were looking for. Evaluate a RAG application Log retriever traces Retrieval ⌘ I

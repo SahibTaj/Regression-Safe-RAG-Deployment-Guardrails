@@ -1,0 +1,13 @@
+llm:
+  answer_model: llama-3.3-70b-versatile
+  eval_model: llama-3.1-8b-instant
+  temperature: 0
+  
+retriever:
+  top_k: 4
+  chunk_size: 1000
+  chunk_overlap: 200
+
+paths:
+  documents_dir: data/documents
+  questions_file: data/test_questions.json
