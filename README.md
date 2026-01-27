@@ -14,6 +14,10 @@ This project introduces a **regression-safe evaluation framework** that continuo
 It enforces **truthfulness as a hard invariant** and **answer coverage as a soft optimization signal**, ensuring both safety and usefulness.
 
 ---
+## What This Project Is (in one sentence)
+A CI/CD-style evaluation and deployment gating system that prevents hallucinations and over-abstention in RAG-based LLM systems.
+
+---
 
 ## Core Ideas
 
