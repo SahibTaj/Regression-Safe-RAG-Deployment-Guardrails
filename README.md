@@ -1,4 +1,4 @@
-# Regression-Safe RAG Evaluation Platform
+# Regression-Safe RAG Deployment Guardrails
 
 Large Language Model (LLM) systems built with Retrieval-Augmented Generation (RAG) often regress silently after prompt, model, or data changes.
 Hallucinations and over-abstention (“I don’t know”) frequently enter production without obvious signals.
