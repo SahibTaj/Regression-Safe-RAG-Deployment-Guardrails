@@ -14,7 +14,7 @@
   { "id": 11, "question": "How does a retriever decide which document chunks to return?" },
   { "id": 12, "question": "What does 'chunk_size' and 'chunk_overlap' mean in text splitting, and why does it matter?" },
   { "id": 13, "question": "Why can increasing chunk overlap improve retrieval quality in some cases?" },
-  { "id": 14, "question": "When should you use a smaller ch unk size vs a larger chunk size in RAG?" },
+  { "id": 14, "question": "When should you use a smaller chunk size vs a larger chunk size in RAG?" },
 
   { "id": 15, "question": "Does Mars have liquid water on its surface today?" },
   { "id": 16, "question": "What is the capital of Australia and why do people confuse it with Sydney?" },

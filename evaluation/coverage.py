@@ -7,7 +7,10 @@ from config import CONFIG
 
 load_dotenv()
 
-client = Groq(api_key=os.getenv("GROQ_API_KEY"))
+client = Groq(
+    api_key=os.getenv("GROQ_API_KEY"),
+    timeout=60.0,
+)
 
 COVERAGE_PROMPT = """
 You are judging answerability strictly from the provided context.
@@ -38,6 +41,8 @@ def is_answerable(question: str, retrieved_docs: list):
     response = client.chat.completions.create(
         model=CONFIG["llm"]["eval_model"],
         temperature=0,
+        reasoning_effort="none",
+        max_tokens=150,
         messages=[
             {"role": "system", "content": "You judge answerability strictly from context."},
             {
@@ -56,14 +61,29 @@ def is_answerable(question: str, retrieved_docs: list):
         return json.loads(raw)
     except Exception:
         return {"answerable": False, "reason": "parse_error"}
-
-def compute_coverage(question, claims, retrieved_docs):
+    
+def compute_coverage(
+    question,
+    claims,
+    retrieved_docs,
+    extraction_failed=False
+):
     verdict = is_answerable(question, retrieved_docs)
+
     answerable = verdict["answerable"]
 
-    abstained = len(claims) == 0
+    # No claims can mean either:
+    # 1. The model genuinely abstained, or
+    # 2. Claim extraction failed.
+    #
+    # Only treat it as abstention when extraction succeeded.
+    abstained = (
+        len(claims) == 0
+        and not extraction_failed
+    )
 
-    # ONLY penalize cowardly abstention
+    # Only penalize genuine abstention when the context
+    # actually contains enough information to answer.
     if answerable and abstained:
         score = 0.0
     else:
@@ -72,5 +92,6 @@ def compute_coverage(question, claims, retrieved_docs):
     return score, {
         "answerable": answerable,
         "abstained": abstained,
+        "extraction_failed": extraction_failed,
         "reason": verdict["reason"]
     }

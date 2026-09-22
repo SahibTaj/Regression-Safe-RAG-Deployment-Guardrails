@@ -6,7 +6,10 @@ from observability.metrics import start_timer, end_timer
 
 load_dotenv()
 
-client = Groq(api_key=os.getenv("GROQ_API_KEY"))
+client = Groq(
+    api_key=os.getenv("GROQ_API_KEY"),
+    timeout=60.0,
+)
 
 SYSTEM_PROMPT = (
     "You are a question-answering assistant.\n"
@@ -17,9 +20,11 @@ SYSTEM_PROMPT = (
 def generate_answer(question, retrieved_docs):
     context = "\n\n".join([d.page_content for d in retrieved_docs])[:12000]
 
+    start = start_timer()
+
     response = client.chat.completions.create(
         model=CONFIG["llm"]["answer_model"],
-        temperature = CONFIG["llm"]["temperature"],
+        temperature=CONFIG["llm"]["temperature"],
         messages=[
             {"role": "system", "content": SYSTEM_PROMPT},
             {
@@ -28,7 +33,7 @@ def generate_answer(question, retrieved_docs):
             }
         ],
     )
-    start = start_timer()
-    response = client.chat.completions.create(...)
+
     latency = end_timer(start)
+
     return response.choices[0].message.content.strip()

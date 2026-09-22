@@ -7,7 +7,10 @@ from config import CONFIG
 
 load_dotenv()
 
-client = Groq(api_key=os.getenv("GROQ_API_KEY"))
+client = Groq(
+    api_key=os.getenv("GROQ_API_KEY"),
+    timeout=60.0,
+)
 
 CLAIM_PROMPT = """
 You are a system that extracts factual claims.
@@ -33,26 +36,43 @@ Text:
 
 
 def extract_claims(answer: str):
-    response = client.chat.completions.create(
-        model = CONFIG["llm"]["eval_model"],
-    temperature = CONFIG["llm"]["temperature"],
-        messages=[
-            {"role": "system", "content": "You extract factual claims."},
-            {
-                "role": "user",
-                "content": CLAIM_PROMPT.format(answer=answer)
-            }
-        ],
-    )
-
-    raw = response.choices[0].message.content
-
     try:
-        parsed = json.loads(raw)
-        return parsed["claims"]
-    except Exception as e:
-        return None
+        response = client.chat.completions.create(
+            model=CONFIG["llm"]["eval_model"],
+            temperature=CONFIG["llm"]["temperature"],
+            reasoning_effort="none",
+            max_tokens=300,
+            messages=[
+                {
+                    "role": "system",
+                    "content": "You extract factual claims and output ONLY valid JSON."
+                },
+                {
+                    "role": "user",
+                    "content": CLAIM_PROMPT.format(answer=answer)
+                }
+            ],
+        )
 
+        raw = response.choices[0].message.content.strip()
+
+        start = raw.find("{")
+        end = raw.rfind("}")
+
+        if start != -1 and end != -1 and end > start:
+            raw = raw[start:end + 1]
+
+        parsed = json.loads(raw)
+
+        claims = parsed.get("claims")
+
+        if not isinstance(claims, list):
+            return None
+
+        return claims
+
+    except Exception:
+        return None
 if __name__ == "__main__":
     answer = "Mars has two moons. It has liquid water on its surface."
     claims = extract_claims(answer)
