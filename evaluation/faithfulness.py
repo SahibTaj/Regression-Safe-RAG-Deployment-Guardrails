@@ -62,7 +62,7 @@ def verify_claims(claims: list, retrieved_docs: list):
             response = client.chat.completions.create(
                 model=CONFIG["llm"]["eval_model"],
                 temperature=CONFIG["llm"]["temperature"],
-                reasoning_effort="none",
+                reasoning_effort="low",
                 max_tokens=1000,
                 messages=[
                     {

@@ -121,6 +121,8 @@ export interface RunResultResponse {
   gate: GateResult;
   metadata: RunMetadata;
   path?: string;
+  status?: string;
+  message?: string;
 }
 
 export interface RunListItem {
@@ -131,6 +133,13 @@ export interface RunListItem {
   completed_questions?: number;
   created_at?: string;
   question_count?: number;
+
+  model?: string;
+  faithfulness?: number;
+  coverage?: number;
+  final_score?: number;
+  finalScore?: number;
+
   gate?: GateResult;
   metadata?: RunMetadata;
 }
@@ -154,7 +163,7 @@ export interface HealthResponse {
 // Generic API helper
 // ============================================================
 
-async function apiRequest<T>(
+export async function apiRequest<T>(
   endpoint: string,
   options: RequestInit = {}
 ): Promise<T> {

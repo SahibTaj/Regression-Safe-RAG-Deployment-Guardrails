@@ -66,30 +66,42 @@ def save_baseline(results, metadata):
         json.dump(payload, f, indent=2)
 
 
-def validate_dataset(baseline_results, current_results):
+def validate_dataset(baseline, current):
+    """
+    Validate that baseline and candidate contain
+    the same evaluation questions.
+
+    The order of questions does not matter.
+    """
+
     baseline_questions = {
-        item["question"]
-        for item in baseline_results
-        if "question" in item
+        str(item.get("question", "")).strip()
+        for item in baseline
+        if item.get("question")
     }
 
     current_questions = {
-        item["question"]
-        for item in current_results
-        if "question" in item
+        str(item.get("question", "")).strip()
+        for item in current
+        if item.get("question")
     }
 
     missing_from_current = baseline_questions - current_questions
     new_in_current = current_questions - baseline_questions
 
-    if missing_from_current or new_in_current:
-        return False, {
-            "missing_from_current": sorted(missing_from_current),
-            "new_in_current": sorted(new_in_current),
-        }
+    compatible = (
+        len(missing_from_current) == 0
+        and len(new_in_current) == 0
+    )
 
-    return True, {}
+    differences = {
+        "missing_from_current": sorted(missing_from_current),
+        "new_in_current": sorted(new_in_current),
+        "baseline_question_count": len(baseline_questions),
+        "current_question_count": len(current_questions),
+    }
 
+    return compatible, differences
 
 def execute_run(run_id):
     """
@@ -172,6 +184,18 @@ def execute_run(run_id):
                 results
             )
 
+            print("\n--- DATASET VALIDATION ---")
+            print(
+                "Baseline questions:",
+                len(baseline["results"])
+            )
+            print(
+                "Candidate questions:",
+                len(results)
+            )
+            print("Compatible:", compatible)
+            print("Differences:", differences)
+
             if not compatible:
 
                 gate = {
@@ -223,6 +247,25 @@ def execute_run(run_id):
             "eval_model": CONFIG["llm"]["eval_model"],
             "question_count": len(results),
             "mode": "candidate",
+
+            "embedding_model": CONFIG["retriever"].get(
+                "embedding_model",
+                "sentence-transformers/all-MiniLM-L6-v2"
+            ),
+
+            "chunk_size": CONFIG["retriever"]["chunk_size"],
+            "chunk_overlap": CONFIG["retriever"]["chunk_overlap"],
+            "top_k": CONFIG["retriever"]["top_k"],
+
+            "vector_store": CONFIG["retriever"].get(
+                "vector_store",
+                "FAISS"
+            ),
+
+            "retriever": CONFIG["retriever"].get(
+                "retriever",
+                "similarity_search"
+            ),
         }
 
         run_path = save_run(
@@ -316,4 +359,39 @@ def create_run(background_tasks):
 
 
 def get_run(run_id):
-    return ACTIVE_RUNS.get(run_id)
+    # First check currently active runs
+    active_run = ACTIVE_RUNS.get(run_id)
+
+    if active_run is not None:
+        return active_run
+
+    # If the backend restarted, try loading the saved run
+    run_path = RUNS_DIR / f"{run_id}.json"
+
+    if not run_path.exists():
+        return None
+
+    with open(run_path, "r", encoding="utf-8") as f:
+        payload = json.load(f)
+
+    gate = payload.get("gate", {})
+
+    return {
+        "run_id": run_id,
+        "status": gate.get("status", "completed"),
+        "progress": 100,
+        "total_questions": len(payload.get("results", [])),
+        "completed_questions": len(payload.get("results", [])),
+        "result": {
+            "run_id": run_id,
+            "results": payload.get("results", []),
+            "gate": payload.get("gate", {}),
+            "metadata": payload.get("metadata", {}),
+            "path": str(run_path),
+        },
+        "promoted": gate.get("status") in {
+            "approved",
+            "approved_with_warnings",
+        },
+        "error": None,
+    }

@@ -1,6 +1,6 @@
-
 "use client";
 
+import { apiRequest } from "../lib/api";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   Activity,
@@ -73,7 +73,7 @@ type GateResult = {
 type RunResultResponse = {
   run_id?: string;
   status?: string;
-  metadata?: Record<string, unknown>;
+  metadata?: unknown;
   results?: QuestionResult[];
   question_results?: QuestionResult[];
   gate?: GateResult;
@@ -97,6 +97,7 @@ type DashboardData = {
 ========================================================= */
 
 const POLLING_INTERVAL = 3000;
+const DASHBOARD_STORAGE_KEY = "rag-guardrails-dashboard";
 
 const INITIAL_DASHBOARD: DashboardData = {
   runId: null,
@@ -140,6 +141,20 @@ function toPercentage(value: unknown): number {
 
 function formatPercentage(value: unknown): string {
   return `${toPercentage(value).toFixed(1)}%`;
+}
+
+function getMetadataValue(
+  metadata: Record<string, unknown> | undefined,
+  key: string,
+  fallback = "Not recorded",
+): string {
+  const value = metadata?.[key];
+
+  if (value === undefined || value === null || value === "") {
+    return fallback;
+  }
+
+  return String(value);
 }
 
 function getFaithfulness(item: QuestionResult): number {
@@ -392,9 +407,12 @@ function ProgressBar({
 export default function DashboardPage() {
   const [dashboard, setDashboard] =
     useState<DashboardData>(INITIAL_DASHBOARD);
+  const [runResult, setRunResult] = useState<unknown>(null);
+  const [error, setError] = useState<string | null>(null);
 
   const [isStarting, setIsStarting] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [hasRestored, setHasRestored] = useState(false);
 
   const pollingRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
@@ -448,6 +466,11 @@ export default function DashboardPage() {
     return getGateStatus(dashboard.result, dashboard.status);
   }, [dashboard.result, dashboard.status]);
 
+  const metadata =
+    (dashboard.result as {
+      metadata?: Record<string, unknown>;
+    } | null)?.metadata ?? {};
+
   const clearPolling = useCallback(() => {
     if (pollingRef.current) {
       clearInterval(pollingRef.current);
@@ -462,14 +485,34 @@ export default function DashboardPage() {
   }, [clearPolling]);
 
   const fetchRunResult = useCallback(async (runId: string) => {
-    const response = (await getRunResult(runId)) as unknown as RunResultResponse;
+    const normalizedRunId = String(runId ?? "").trim();
 
-    setDashboard((previous) => ({
-      ...previous,
-      result: response,
-      status: normalizeStatus(response.status ?? previous.status),
-      error: null,
-    }));
+    console.log("Fetching result for run ID:", normalizedRunId);
+
+    if (
+      !normalizedRunId ||
+      normalizedRunId === "undefined" ||
+      normalizedRunId === "null"
+    ) {
+      console.warn("Skipping result fetch: invalid run ID");
+      return null;
+    }
+
+    try {
+      const result = await apiRequest(
+        `/runs/${encodeURIComponent(normalizedRunId)}/result`
+      );
+
+      console.log("Run result received:", result);
+
+      return result;
+    } catch (error) {
+      console.error("Failed to fetch run result:", error);
+
+      // Do not throw the error again.
+      // This prevents an unhandled promise rejection.
+      return null;
+    }
   }, []);
 
   const checkRunStatus = useCallback(
@@ -519,9 +562,92 @@ export default function DashboardPage() {
     },
     [clearPolling, fetchRunResult],
   );
+  const startPolling = useCallback(
+    (runId: string) => {
+      clearPolling();
+
+      pollingRef.current = setInterval(() => {
+        void checkRunStatus(runId);
+      }, POLLING_INTERVAL);
+    },
+    [checkRunStatus, clearPolling],
+  );
+
+  // --------------------------------------------------
+  // RESTORE DASHBOARD STATE
+  // --------------------------------------------------
+
+  useEffect(() => {
+    const savedDashboard = localStorage.getItem(
+      DASHBOARD_STORAGE_KEY,
+    );
+
+    if (savedDashboard) {
+      try {
+        const parsedDashboard =
+          JSON.parse(savedDashboard) as DashboardData;
+
+        setDashboard(parsedDashboard);
+
+        const savedStatus = normalizeStatus(
+          parsedDashboard.status,
+        );
+
+        const savedRunId = parsedDashboard.runId;
+
+        if (savedRunId && !isFinished(savedStatus)) {
+          startPolling(savedRunId);
+          void checkRunStatus(savedRunId);
+        } else if (
+          savedRunId &&
+          isSuccessful(savedStatus)
+        ) {
+          void fetchRunResult(savedRunId);
+        }
+      } catch (error) {
+        console.error(
+          "Failed to restore dashboard state:",
+          error,
+        );
+
+        localStorage.removeItem(
+          DASHBOARD_STORAGE_KEY,
+        );
+      }
+    }
+
+    setHasRestored(true);
+  }, [
+    checkRunStatus,
+    fetchRunResult,
+    startPolling,
+  ]);
+
+
+  // --------------------------------------------------
+  // SAVE DASHBOARD STATE
+  // --------------------------------------------------
+
+  useEffect(() => {
+    if (!hasRestored) {
+      return;
+    }
+
+    localStorage.setItem(
+      DASHBOARD_STORAGE_KEY,
+      JSON.stringify(dashboard),
+    );
+  }, [
+    dashboard,
+    hasRestored,
+  ]);
+
+  const isRunning =
+    dashboard.status === "queued" ||
+    dashboard.status === "running";
 
   const startRun = useCallback(async () => {
-    if (isStarting) {
+    if (isStarting || isRunning) {
       return;
     }
 
@@ -545,8 +671,8 @@ export default function DashboardPage() {
       if (!response.run_id) {
         throw new Error(
           response.error ??
-            response.detail ??
-            "The backend did not return a run ID.",
+          response.detail ??
+          "The backend did not return a run ID.",
         );
       }
 
@@ -558,16 +684,19 @@ export default function DashboardPage() {
         status: normalizeStatus(response.status ?? "queued"),
       }));
 
-      await checkRunStatus(runId);
+      // Start polling before the first status check.
+      // If the run is already finished, checkRunStatus
+      // will clear the interval.
+      startPolling(runId);
 
-      pollingRef.current = setInterval(() => {
-        void checkRunStatus(runId);
-      }, POLLING_INTERVAL);
+      await checkRunStatus(runId);
     } catch (error) {
       const message =
         error instanceof Error
           ? error.message
           : "Unable to start evaluation.";
+
+      clearPolling();
 
       setDashboard((previous) => ({
         ...previous,
@@ -577,8 +706,13 @@ export default function DashboardPage() {
     } finally {
       setIsStarting(false);
     }
-  }, [checkRunStatus, clearPolling, isStarting]);
-
+  }, [
+    checkRunStatus,
+    clearPolling,
+    isRunning,
+    isStarting,
+    startPolling,
+  ]);
   const refreshRun = useCallback(async () => {
     if (!dashboard.runId) {
       return;
@@ -592,10 +726,6 @@ export default function DashboardPage() {
       setIsRefreshing(false);
     }
   }, [checkRunStatus, dashboard.runId]);
-
-  const isRunning =
-    dashboard.status === "queued" ||
-    dashboard.status === "running";
 
   return (
     <main className="min-h-screen bg-black px-6 py-8 text-white md:px-10">
@@ -708,23 +838,23 @@ export default function DashboardPage() {
         {/* METRICS */}
         <section className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
           <MetricCard
-            label="Faithfulness"
+            label="Average Faithfulness"
             value={formatPercentage(metrics.faithfulness)}
-            description="Average claim support score"
+            description="Average across all evaluated questions"
             icon={<ShieldCheck size={20} />}
           />
 
           <MetricCard
-            label="Coverage"
+            label="Average Coverage"
             value={formatPercentage(metrics.coverage)}
-            description="Average answerability coverage"
+            description="Average across all evaluated questions"
             icon={<BarChart3 size={20} />}
           />
 
           <MetricCard
-            label="Final Score"
+            label="Average Final Score"
             value={formatPercentage(metrics.finalScore)}
-            description="Combined evaluation score"
+            description="Average across all evaluated questions"
             icon={<TrendingUp size={20} />}
           />
 
@@ -808,6 +938,57 @@ export default function DashboardPage() {
                 )}
               />
             </div>
+          </div>
+        </section>
+
+        {/* RAG CONFIGURATION */}
+        <section className="mt-8 rounded-2xl border border-zinc-800 bg-zinc-950 p-6">
+          <SectionHeader
+            icon={<GitCompare size={20} />}
+            title="RAG Configuration"
+            description="Models and retrieval settings used for this evaluation."
+          />
+
+          <div className="grid gap-x-8 md:grid-cols-2">
+            <InfoRow
+              label="Answer Model"
+              value={getMetadataValue(metadata, "answer_model")}
+            />
+
+            <InfoRow
+              label="Evaluation Model"
+              value={getMetadataValue(metadata, "eval_model")}
+            />
+
+            <InfoRow
+              label="Embedding Model"
+              value={getMetadataValue(metadata, "embedding_model")}
+            />
+
+            <InfoRow
+              label="Chunk Size"
+              value={getMetadataValue(metadata, "chunk_size")}
+            />
+
+            <InfoRow
+              label="Chunk Overlap"
+              value={getMetadataValue(metadata, "chunk_overlap")}
+            />
+
+            <InfoRow
+              label="Top-K"
+              value={getMetadataValue(metadata, "top_k")}
+            />
+
+            <InfoRow
+              label="Vector Store"
+              value={getMetadataValue(metadata, "vector_store")}
+            />
+
+            <InfoRow
+              label="Retriever"
+              value={getMetadataValue(metadata, "retriever")}
+            />
           </div>
         </section>
 
@@ -917,9 +1098,8 @@ function InfoRow({
       <span className="text-sm text-zinc-500">{label}</span>
 
       <span
-        className={`max-w-[65%] truncate text-right text-sm text-zinc-200 ${
-          mono ? "font-mono text-xs" : ""
-        }`}
+        className={`max-w-[65%] truncate text-right text-sm text-zinc-200 ${mono ? "font-mono text-xs" : ""
+          }`}
       >
         {value}
       </span>

@@ -1,8 +1,10 @@
-# evaluation/claims.py
+
 import os
 import json
+
 from groq import Groq
 from dotenv import load_dotenv
+
 from config import CONFIG
 
 load_dotenv()
@@ -12,68 +14,126 @@ client = Groq(
     timeout=60.0,
 )
 
+
 CLAIM_PROMPT = """
 You are a system that extracts factual claims.
 
 Rules:
-- Extract ONLY explicit factual statements
-- Each claim must be atomic
-- Do NOT infer or add new facts
-- Ignore opinions or vague statements
+- Extract ONLY explicit factual statements from the answer.
+- Each claim must be atomic.
+- Do NOT infer or add new facts.
+- Ignore opinions, instructions, and vague statements.
+- If the answer is "I don't know", return an empty claims list.
+- Return ONLY valid JSON.
+- Do not use Markdown code fences.
 
-Output MUST be valid JSON in this exact format:
+Required JSON format:
 
-{{
+{
   "claims": [
-    {{"id": 1, "text": "claim text here"}},
-    {{"id": 2, "text": "claim text here"}}
+    {
+      "id": 1,
+      "text": "claim text here"
+    }
   ]
-}}
+}
 
-Text:
-{answer}
+Answer to analyze:
 """
 
 
 def extract_claims(answer: str):
+
+    # Do not evaluate a safe abstention.
+    if answer.strip().lower().rstrip(".") == "i don't know":
+        return []
+
+    prompt = CLAIM_PROMPT + answer
+
     try:
         response = client.chat.completions.create(
             model=CONFIG["llm"]["eval_model"],
-            temperature=CONFIG["llm"]["temperature"],
-            reasoning_effort="none",
+            temperature=0,
+            reasoning_effort="low",
             max_tokens=300,
+            response_format={"type": "json_object"},
             messages=[
                 {
                     "role": "system",
-                    "content": "You extract factual claims and output ONLY valid JSON."
+                    "content": (
+                        "You extract factual claims. "
+                        "Return only a valid JSON object. "
+                        "Never include Markdown or additional text."
+                    ),
                 },
                 {
                     "role": "user",
-                    "content": CLAIM_PROMPT.format(answer=answer)
-                }
+                    "content": prompt,
+                },
             ],
         )
 
         raw = response.choices[0].message.content.strip()
 
+        # Remove Markdown fences if the model adds them.
+        if raw.startswith("```"):
+            raw = raw.replace("```json", "")
+            raw = raw.replace("```", "")
+            raw = raw.strip()
+
+        # Extract the JSON object.
         start = raw.find("{")
         end = raw.rfind("}")
 
-        if start != -1 and end != -1 and end > start:
-            raw = raw[start:end + 1]
+        if start == -1 or end == -1 or end <= start:
+            raise ValueError("No valid JSON object found")
+
+        raw = response.choices[0].message.content.strip()
+
+        print("\n--- RAW CLAIM EXTRACTION OUTPUT ---")
+        print(raw)
+        print("--- END RAW OUTPUT ---\n")
 
         parsed = json.loads(raw)
 
         claims = parsed.get("claims")
 
         if not isinstance(claims, list):
-            return None
+            raise ValueError("The claims field is not a list")
 
-        return claims
+        valid_claims = []
 
-    except Exception:
+        for index, claim in enumerate(claims, start=1):
+
+            if not isinstance(claim, dict):
+                continue
+
+            text = claim.get("text")
+
+            if not isinstance(text, str) or not text.strip():
+                continue
+
+            valid_claims.append(
+                {
+                    "id": index,
+                    "text": text.strip(),
+                }
+            )
+
+        return valid_claims
+
+    except Exception as error:
+        print(f"Claim extraction failed: {error}")
         return None
+
+
 if __name__ == "__main__":
-    answer = "Mars has two moons. It has liquid water on its surface."
+
+    answer = (
+        "Mars has two moons. "
+        "Mars has liquid water on its surface."
+    )
+
     claims = extract_claims(answer)
+
     print(claims)
