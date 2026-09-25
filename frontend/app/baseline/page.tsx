@@ -112,6 +112,8 @@ export default function BaselinePage() {
     candidateMetrics.finalScore -
     baselineMetrics.finalScore;
 
+  const hasRegression = scoreDelta < 0;
+
   const metrics = [
     {
       name: "Faithfulness",
@@ -132,8 +134,11 @@ export default function BaselinePage() {
       threshold: 90,
     },
   ];
+  const gate = candidate.gate;
 
-  const hasRegression = scoreDelta < 0;
+  const isBlocked = gate?.status === "blocked";
+  const hasWarnings = gate?.status === "approved_with_warnings";
+  const isApproved = gate?.status === "approved";
 
   return (
     <PageShell>
