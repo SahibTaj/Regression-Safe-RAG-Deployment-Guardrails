@@ -1,834 +1,443 @@
 # Regression-Safe RAG Deployment Guardrails
 
-A web-based LLMOps platform for evaluating Retrieval-Augmented Generation (RAG) systems, detecting quality regressions, and preventing unsafe candidate versions from being promoted.
+A local LLMOps platform for evaluating Retrieval-Augmented Generation (RAG) systems, detecting quality regressions, comparing candidate versions against an accepted baseline, and supporting safer deployment decisions.
 
-The goal of this project is not to build another RAG chatbot. The goal is to build a **usable evaluation and deployment-gating service** that developers can run against their own RAG systems, inspect through a web dashboard, and eventually deploy as a publicly accessible application.
+> **Status:** V1 stabilization prototype for local development, evaluation, and demonstration.
 
-> **Core idea:** A RAG system should not be deployed just because it produces fluent answers. Its quality should be evaluated against an accepted baseline before promotion.
+## Overview
 
----
+Changes to a RAG system—such as retrieval configuration, chunking, prompts, models, or generation settings—can introduce unsupported answers or reduce answer quality. This project provides an evaluation workflow that runs a fixed question set, measures quality signals, compares candidate results with a baseline, and calculates a deployment gate.
 
-## Product Vision
+The platform focuses on:
 
-The intended product workflow is:
+- Evaluation run management
+- Faithfulness and coverage measurement
+- Claim extraction and evidence inspection
+- Baseline-versus-candidate comparison
+- Regression failures and warnings
+- Safety-aware answer handling and abstention
+- Deployment gate decisions
+- Dashboard-based evaluation visibility
 
-```text
-                    RAG Evaluation Platform
+## Screenshots
 
-User / Developer
-       │
-       │ submits evaluation
-       ▼
-┌──────────────────────┐
-│     FastAPI API      │
-└──────────┬───────────┘
-           │
-           ▼
-┌──────────────────────┐
-│     RAG Pipeline     │
-│                      │
-│ Retrieval            │
-│ Generation           │
-└──────────┬───────────┘
-           │
-           ▼
-┌──────────────────────┐
-│      Evaluation      │
-│                      │
-│ Claim Extraction     │
-│ Faithfulness         │
-│ Coverage             │
-│ Final Score          │
-└──────────┬───────────┘
-           │
-           ▼
-┌──────────────────────┐
-│   Regression Gate    │
-│                      │
-│ Candidate vs         │
-│ Accepted Baseline    │
-└──────────┬───────────┘
-           │
-       ┌───┴────┐
-       ▼        ▼
-    PROMOTE    BLOCK
-       │        │
-       └───┬────┘
-           ▼
-┌──────────────────────┐
-│    Next.js Dashboard │
-│                      │
-│ Runs                 │
-│ Evidence             │
-│ Gate                 │
-│ Baseline             │
-│ Analytics            │
-└──────────────────────┘
-```
+Add your screenshots at the locations below.
 
-The final deployed application is intended to allow users to interact with the evaluation platform through a browser rather than requiring them to run the Python project locally.
+### Dashboard
 
----
+<!-- Add dashboard screenshot here -->
+<!-- Suggested path: docs/images/dashboard.png -->
 
-# What the Platform Does
+### Evaluation Runs
 
-## 1. Evaluate RAG Responses
+<!-- Add Evaluation Runs screenshot here -->
+<!-- Suggested path: docs/images/evaluation-runs.png -->
 
-The platform evaluates a RAG system using a configurable test-question dataset.
+### Deployment Gate
 
-For each question:
+<!-- Add Deployment Gate screenshot here -->
+<!-- Suggested path: docs/images/deployment-gate.png -->
 
-```text
-Question
-   ↓
-Retrieve relevant document chunks
-   ↓
-Generate answer
-   ↓
-Extract factual claims
-   ↓
-Evaluate claims against retrieved context
-   ↓
-Evaluate context answerability
-   ↓
-Calculate final score
-```
+### Baseline Comparison
 
-Current RAG components include:
+<!-- Add Baseline Comparison screenshot here -->
+<!-- Suggested path: docs/images/baseline-comparison.png -->
 
-- FAISS vector search
-- Hugging Face `sentence-transformers/all-MiniLM-L6-v2`
-- Groq-hosted LLMs
-- configurable chunk size
-- configurable chunk overlap
-- configurable top-k retrieval
+### Analytics
 
----
+<!-- Add Analytics screenshot here -->
+<!-- Suggested path: docs/images/analytics.png -->
 
-## 2. Claim-Level Faithfulness
+### System Architecture
 
-The platform breaks generated answers into factual claims.
+<!-- Add architecture/workflow screenshot here -->
+<!-- Suggested path: docs/images/architecture.png -->
 
-Example:
+## Key Features
+
+### 1. Evaluation Runs
+
+- Start candidate evaluation runs through the application.
+- Execute a predefined evaluation dataset.
+- Track progress and completion status.
+- Store results for later inspection.
+- Review question-level evaluation details.
+
+### 2. RAG Quality Evaluation
+
+The evaluation workflow records information such as:
+
+- Generated answer
+- Extracted claims
+- Claim support and evidence
+- Faithfulness score
+- Coverage score
+- Final score
+- Abstention and safety-related information
+- Evaluation or extraction errors
+
+### 3. Regression Detection
+
+Candidate results are compared with the accepted baseline to identify:
+
+- Faithfulness degradation
+- Coverage degradation
+- Final-score drops
+- Question-level failures
+- Warning-level regressions
+
+### 4. Deployment Gate
+
+The deployment gate summarizes the result of configured quality checks. Possible states include:
+
+- `approved`
+- `approved_with_warnings`
+- `blocked`
+- `failed`
+- `development`
+
+A blocked result means that the candidate did not satisfy the configured promotion checks for that evaluation run.
+
+## Architecture
 
 ```text
-Generated answer
-       ↓
-Claim 1
-Claim 2
-Claim 3
-Claim 4
-       ↓
-Check each claim against retrieved context
+                 Next.js Frontend
+                        |
+                    REST API
+                        |
+                 FastAPI Backend
+                        |
+              Evaluation Service
+          _________|___________
+         |         |           |
+      RAG       Evaluation   Run/Result
+    Pipeline    Modules      Persistence
+         |         |           |
+      Retrieval  Claims     Baseline
+      Generation Faithfulness Candidate
+      Safety     Coverage    Results
+                        |
+                 Deployment Gate
 ```
 
-Each claim receives:
-
-- supported / unsupported verdict
-- supporting evidence
-
-The aggregate faithfulness score is based on the proportion of supported claims.
-
-This makes it possible to inspect **which claim caused a quality failure**, instead of relying only on an overall LLM score.
-
----
-
-## 3. Coverage / Answerability
-
-The platform separately evaluates whether the retrieved context contains enough information to answer the question.
-
-This helps distinguish:
+## Evaluation Workflow
 
 ```text
-Context contains sufficient information
-              ↓
-             Answer
+Start evaluation run
+        |
+Load evaluation questions
+        |
+Run the RAG pipeline
+        |
+Generate answer from retrieved context
+        |
+Extract claims and evaluate support
+        |
+Calculate faithfulness, coverage, and final score
+        |
+Compare candidate against baseline
+        |
+Identify failures and warnings
+        |
+Calculate deployment gate
+        |
+Persist and display the result
 ```
 
-from:
+## Technology Stack
 
-```text
-Context does not contain enough information
-              ↓
-       Safe abstention
-```
+### Backend
 
-The pipeline also records whether claim extraction failed so evaluator failures are not automatically treated as legitimate model abstentions.
+- Python
+- FastAPI
+- Uvicorn
+- Pydantic schemas
+- Background tasks
+- JSON-based result persistence
 
----
+### RAG and Evaluation
 
-## 4. Regression Detection
+- Retrieval-Augmented Generation
+- Claim extraction
+- Faithfulness evaluation
+- Coverage evaluation
+- Regression comparison
+- Safety and abstention handling
 
-A candidate evaluation is compared against an accepted baseline.
-
-Current regression policy:
-
-| Metric | Type | Purpose |
-|---|---|---|
-| Faithfulness | Hard gate | Important quality regression can block promotion |
-| Coverage | Soft signal | Coverage regression produces a warning |
-| Final score | Hard gate | Large quality drops can block promotion |
-
-The regression engine matches questions by their question text rather than relying on list position.
-
-Candidate and baseline evaluation datasets must also be compatible before a regression comparison is performed.
-
----
-
-# Baseline Lifecycle
-
-Baseline management is intentionally explicit.
-
-## Smoke Test
-
-```bash
-python app.py --smoke
-```
-
-The smoke test evaluates only the first question.
-
-It:
-
-- verifies the pipeline is functioning
-- saves a run artifact
-- does not modify the baseline
-- does not make a deployment decision
-
-This prevents a quick development test from accidentally becoming the accepted baseline.
-
----
-
-## Create an Accepted Baseline
-
-```bash
-python app.py --set-baseline
-```
-
-This explicitly evaluates the configured evaluation suite and creates the accepted baseline.
-
-The baseline represents the version against which future candidate runs are compared.
-
----
-
-## Evaluate a Candidate
-
-```bash
-python app.py
-```
-
-A normal candidate evaluation:
-
-1. runs the evaluation suite
-2. stores the candidate run
-3. loads the accepted baseline
-4. validates dataset compatibility
-5. calculates regressions
-6. blocks or promotes the candidate
-7. preserves the previous baseline when a candidate fails
-
-The intended lifecycle is:
-
-```text
-                 Candidate
-                     │
-                     ▼
-              Run evaluation
-                     │
-                     ▼
-              Save run artifact
-                     │
-                     ▼
-             Load accepted baseline
-                     │
-                     ▼
-             Regression evaluation
-                     │
-             ┌───────┴───────┐
-             ▼               ▼
-           PASS             FAIL
-             │               │
-             ▼               ▼
-        Promote          Block
-        candidate        candidate
-             │               │
-             ▼               ▼
-       New baseline     Old baseline
-        accepted        preserved
-```
-
----
-
-# Web Application
-
-The project is being developed as a complete web application.
-
-## Frontend
-
-The frontend is built with:
+### Frontend
 
 - Next.js
+- React
 - TypeScript
 - Tailwind CSS
-- Recharts
 - Lucide React
 
-Current dashboard areas:
+### Development
 
-```text
-Dashboard
-Evaluation Runs
-Run Details
-Deployment Gate
-Baseline Comparison
-Analytics
-```
+- Git and GitHub
+- PowerShell
+- Python virtual environment
+- REST API testing through PowerShell, browser, or Postman
 
-The UI is intentionally designed as an **LLMOps/evaluation console**, not as a chatbot.
-
-The frontend will eventually consume real API data instead of mock values.
-
----
-
-# Backend
-
-The Python evaluation engine will be exposed through FastAPI.
-
-Planned API surface:
-
-```text
-GET  /health
-GET  /runs
-GET  /runs/{run_id}
-GET  /baseline
-GET  /gate
-GET  /analytics
-POST /evaluate
-```
-
-The initial backend will use the existing JSON run artifacts and baseline files.
-
-A database can be introduced later if the deployed application requires persistent multi-user storage.
-
----
-
-# Public Deployment Goal
-
-The end goal is a publicly accessible application that anybody can use.
-
-Target architecture:
-
-```text
-                     Internet
-                         │
-                         ▼
-                ┌─────────────────┐
-                │   Vercel / CDN  │
-                │    Next.js UI   │
-                └────────┬────────┘
-                         │ HTTPS
-                         ▼
-                ┌─────────────────┐
-                │ FastAPI Backend │
-                │ Render/Railway  │
-                │ or similar      │
-                └────────┬────────┘
-                         │
-             ┌───────────┼───────────┐
-             ▼           ▼           ▼
-          RAG Engine  Evaluation  Storage
-             │           │           │
-             └───────────┼───────────┘
-                         ▼
-                    LLM Provider
-```
-
-The LLM API key will remain on the backend.
-
-It must never be exposed in the Next.js client.
-
-For a public deployment, the project will eventually need to address:
-
-- authentication or abuse protection
-- API rate limiting
-- request size limits
-- secure API-key handling
-- CORS configuration
-- persistent storage
-- deployment logging
-- cost controls
-- timeout/error handling
-- secrets management
-
-These are deployment requirements to implement before opening the service to unrestricted public traffic.
-
----
-
-# Current Architecture
+## Project Structure
 
 ```text
 Regression-Safe-RAG-Guardrails-Evaluation-Platform/
-│
-├── baselines/
-│   └── baseline.json
-│
-├── data/
-│   ├── documents/
-│   └── test_questions.json
-│
-├── evaluation/
-│   ├── claims.py
-│   ├── coverage.py
-│   ├── faithfulness.py
-│   ├── final_score.py
-│   ├── load_baseline.py
-│   ├── regression.py
-│   ├── save_baseline.py
-│   └── save_run.py
-│
-├── observability/
-│   └── metrics.py
-│
-├── rag/
-│   ├── generator.py
-│   ├── pipeline.py
-│   └── retriever.py
-│
-├── runs/
-│   └── run_*.json
-│
-├── security/
-│   ├── injection_tests.yaml
-│   └── runner.py
-│
-├── frontend/
-│   ├── app/
-│   │   ├── analytics/
-│   │   ├── baseline/
-│   │   ├── gate/
-│   │   ├── runs/
-│   │   ├── globals.css
-│   │   ├── layout.tsx
-│   │   └── page.tsx
-│   │
-│   └── components/
-│       └── Sidebar.tsx
-│
-├── app.py
-├── config.py
-├── config.yaml
-├── requirements.txt
-└── README.md
+|
+|-- backend/
+|   |-- main.py
+|   |-- service.py
+|   `-- schemas.py
+|
+|-- baselines/
+|-- data/
+|   `-- test_questions.json
+|-- evaluation/
+|   |-- claims.py
+|   |-- coverage.py
+|   `-- faithfulness.py
+|-- frontend/
+|   |-- app/
+|   |   |-- analytics/
+|   |   |-- baseline/
+|   |   |-- gate/
+|   |   |-- runs/
+|   |   |-- layout.tsx
+|   |   `-- page.tsx
+|   |-- components/
+|   `-- lib/
+|       |-- api.ts
+|       `-- metrics.ts
+|-- rag/
+|   |-- generator.py
+|   `-- pipeline.py
+|-- runs/
+|-- scripts/
+`-- README.md
 ```
 
----
+## API Endpoints
 
-# Configuration
+### Health Check
 
-Main configuration:
-
-```yaml
-llm:
-  answer_model: openai/gpt-oss-120b
-  eval_model: qwen/qwen3.8-27b
-  temperature: 0
-
-retriever:
-  top_k: 4
-  chunk_size: 1000
-  chunk_overlap: 200
-
-paths:
-  documents_dir: data/documents
-  questions_file: data/test_questions.json
+```http
+GET /health
 ```
 
-The exact models available to a deployed instance may change over time. Model IDs should therefore remain configuration-driven rather than hardcoded throughout the application.
-
----
-
-# Evaluation Artifacts
-
-Each evaluation produces a timestamped JSON artifact:
-
-```text
-runs/run_20260918_154823.json
-```
-
-Example:
+Example response:
 
 ```json
 {
-  "metadata": {
-    "answer_model": "openai/gpt-oss-120b",
-    "eval_model": "qwen/qwen3.8-27b",
-    "timestamp": "..."
-  },
-  "results": [
-    {
-      "question": "What is RAG?",
-      "faithfulness": 0.92,
-      "coverage": 1.0,
-      "final_score": 0.95
-    }
-  ]
+  "status": "ok",
+  "service": "rag-guardrails-api"
 }
 ```
 
-The accepted baseline is stored separately:
+### Start a Run
 
-```text
-baselines/baseline.json
+```http
+POST /runs
 ```
 
-These artifacts provide a lightweight audit trail for candidate evaluations.
+Example response:
 
----
-
-# Local Setup
-
-## 1. Clone
-
-```bash
-git clone https://github.com/SahibTaj/Regression-Safe-RAG-Deployment-Guardrails.git
-cd Regression-Safe-RAG-Deployment-Guardrails
+```json
+{
+  "run_id": "run_YYYYMMDD_HHMMSS_identifier",
+  "status": "queued"
+}
 ```
 
-## 2. Create Python environment
+### Get Run Status
 
-Windows:
+```http
+GET /runs/{run_id}
+```
+
+Returns the run status, progress, question count, completed question count, and error information.
+
+### Get Run Result
+
+```http
+GET /runs/{run_id}/result
+```
+
+Returns the completed evaluation result, including question-level results and the deployment gate.
+
+### List Runs
+
+```http
+GET /runs
+```
+
+Returns saved evaluation run information for the dashboard.
+
+## Local Setup
+
+### Prerequisites
+
+- Python 3.10 or newer
+- Node.js and npm
+- Git
+- Required model-provider credentials
+
+### Clone the Repository
 
 ```powershell
-python -m venv venv
-venv\Scriptsctivate
+git clone https://github.com/SahibTaj/Regression-Safe-RAG-Deployment-Guardrails.git
+cd Regression-Safe-RAG-Guardrails-Evaluation-Platform
 ```
 
-Linux/macOS:
+### Create the Python Environment
 
-```bash
-python3 -m venv venv
-source venv/bin/activate
+```powershell
+python -m venv venvl
+.\venvl\Scripts\Activate.ps1
 ```
 
-## 3. Install dependencies
+Install backend dependencies when a requirements file is available:
 
-```bash
+```powershell
 pip install -r requirements.txt
 ```
 
-## 4. Configure environment variables
+### Configure Environment Variables
 
-Create `.env`:
+Configure the required model-provider credentials locally. For example:
 
 ```env
 GROQ_API_KEY=your_api_key_here
 ```
 
-Never commit `.env` or API keys.
+Never commit API keys, tokens, or other secrets to GitHub.
 
----
+## Run the Backend
 
-# Run the Backend Evaluation
+From the project root:
 
-Smoke test:
-
-```bash
-python app.py --smoke
+```powershell
+python -m uvicorn backend.main:app --reload
 ```
 
-Create baseline:
+The backend runs at:
 
-```bash
-python app.py --set-baseline
+```text
+http://127.0.0.1:8000
 ```
 
-Candidate evaluation:
+Test the health endpoint:
 
-```bash
-python app.py
+```powershell
+Invoke-RestMethod http://127.0.0.1:8000/health
 ```
 
----
+## Run the Frontend
 
-# Run the Frontend
+Open a second terminal:
 
-```bash
+```powershell
 cd frontend
 npm install
 npm run dev
 ```
 
-Open:
+The frontend runs at:
 
 ```text
 http://localhost:3000
 ```
 
-The frontend currently contains dashboard presentation data while the FastAPI integration is being completed.
+Configure the backend URL in `frontend/.env.local` when required:
 
----
-
-# Development Roadmap
-
-The project is intentionally being built in stages so that each stage produces a working system.
-
-## Phase 1 — Stable Evaluation Engine
-
-- [x] RAG retrieval
-- [x] Answer generation
-- [x] Claim extraction
-- [x] Claim-level faithfulness
-- [x] Coverage evaluation
-- [x] Final scoring
-- [x] Candidate run storage
-- [x] Baseline management
-- [x] Regression gate
-- [x] Question-based regression matching
-- [x] Smoke-test mode
-- [x] Explicit baseline creation
-
-## Phase 2 — Real Web Application
-
-- [x] Next.js application
-- [x] Dashboard
-- [x] Evaluation Runs page
-- [x] Run Details page
-- [x] Deployment Gate page
-- [x] Baseline Comparison page
-- [x] Analytics page
-- [ ] FastAPI application
-- [ ] Connect frontend to backend
-- [ ] Replace mock dashboard data
-- [ ] Real run-detail inspection
-- [ ] Real baseline/gate information
-- [ ] Real analytics
-
-## Phase 3 — Production-Ready Evaluation
-
-- [ ] Robust structured evaluator outputs
-- [ ] Better evaluator error handling
-- [ ] Reproducibility metadata
-- [ ] Git commit/config/data/model version tracking
-- [ ] Token usage tracking
-- [ ] Latency tracking
-- [ ] Cost estimation
-- [ ] Retrieval quality metrics
-- [ ] Prompt-injection regression tests
-- [ ] Stronger evaluation dataset
-
-## Phase 4 — Public Deployment
-
-- [ ] Deploy Next.js frontend
-- [ ] Deploy FastAPI backend
-- [ ] Configure HTTPS/CORS
-- [ ] Secure secret management
-- [ ] API rate limiting
-- [ ] Request limits
-- [ ] Error handling and timeouts
-- [ ] Persistent storage
-- [ ] Authentication/abuse protection as required
-- [ ] Deployment monitoring
-- [ ] Cost controls
-- [ ] Public documentation
-
-## Phase 5 — Automated CI/CD
-
-The final development stage can integrate the evaluation gate with source control:
-
-```text
-Developer changes RAG system
-            ↓
-        Git push
-            ↓
-       CI evaluation
-            ↓
-      Candidate scores
-            ↓
-     Compare baseline
-            ↓
-      ┌─────┴─────┐
-      ▼           ▼
-    PASS         FAIL
-      │           │
-      ▼           ▼
-  Continue      Stop
-  deployment   deployment
+```env
+NEXT_PUBLIC_API_URL=http://127.0.0.1:8000
 ```
 
-Potential implementation:
+## Running an Evaluation
 
-- GitHub Actions
-- automated evaluation
-- baseline comparison
-- deployment blocking
-- evaluation artifacts
+1. Start the FastAPI backend.
+2. Start the Next.js frontend.
+3. Open `http://localhost:3000`.
+4. Start a candidate evaluation run.
+5. Wait for the evaluation to finish.
+6. Open the Evaluation Runs page.
+7. Review the candidate scores and question-level results.
+8. Inspect the Deployment Gate page.
+9. Compare the candidate with the accepted baseline.
 
----
+To inspect a run through PowerShell:
 
-# Production Quality Goals
-
-Before calling the public service production-ready, the project should be able to demonstrate:
-
-### Reliability
-
-- evaluator failures are distinguishable from model failures
-- malformed LLM output is handled safely
-- timeouts and provider errors do not silently corrupt results
-- candidate runs remain auditable
-
-### Reproducibility
-
-A run should eventually identify:
-
-```text
-Run ID
-Model versions
-Embedding model
-Retriever configuration
-Chunking configuration
-Evaluation dataset
-Git commit
-Timestamp
+```powershell
+$runId = "your_run_id"
+Invoke-RestMethod "http://127.0.0.1:8000/runs/$runId"
+Invoke-RestMethod "http://127.0.0.1:8000/runs/$runId/result"
 ```
 
-### Security
+## Safety and Abstention Handling
 
-The deployed service should protect:
+The RAG pipeline includes handling for situations where an answer should not be presented as supported. Examples include:
 
-```text
-API keys
-User data
-Uploaded documents
-Provider credentials
-Internal evaluation prompts
-```
+- Questions that cannot be answered from the available context
+- Unsupported claims
+- Missing document evidence
+- Insufficient retrieval context
+- Claim extraction or evaluator errors
 
-and should include appropriate input validation and abuse controls.
+The platform records relevant information so that questionable outputs can be inspected rather than automatically treated as successful answers.
 
-### Observability
+## Example Use Case
 
-The platform should eventually expose:
+A team changes a RAG application by modifying its retrieval configuration, chunking strategy, prompt, model, or generation settings.
 
-```text
-Quality
-├── Faithfulness
-├── Coverage
-├── Retrieval quality
-└── Final score
+The team can then:
 
-Performance
-├── Latency
-└── Throughput
+1. Run the changed system against a fixed question dataset.
+2. Compare the candidate results with the accepted baseline.
+3. Identify quality regressions.
+4. Review failures and warnings.
+5. Inspect the deployment gate.
+6. Decide whether the candidate is ready for further testing or promotion.
 
-LLM usage
-├── Input tokens
-├── Output tokens
-└── Estimated cost
+## Current Limitations
 
-Deployment
-├── Promoted runs
-└── Blocked runs
-```
+This version is a local development and demonstration prototype. Current limitations include:
 
----
+- Evaluation quality depends on the selected evaluator model.
+- Model-provider rate limits and temporary availability can affect results.
+- JSON-based persistence is intended for a prototype and may not scale to production workloads.
+- Authentication and role-based access control are not included in the current local workflow.
+- Production-grade distributed workers and queue management are not implemented.
+- Evaluation thresholds require additional calibration with a larger representative dataset.
+- Evaluator failures need to be distinguished more clearly from genuine RAG regressions in future iterations.
 
-# Important Project Scope
+## Future Improvements
 
-This project is intentionally **not** trying to become a full enterprise MLOps platform.
+- Database-backed run and metric storage
+- Dataset versioning
+- Authentication and role-based access control
+- Experiment comparison across multiple candidates
+- Additional evaluation metrics
+- Human review workflows
+- Evaluator retries and fallback models
+- CI/CD integration with GitHub Actions
+- Prompt and model version tracking
+- Exportable evaluation reports
+- Production monitoring and alerting
+- Configurable deployment policies
 
-The core product is:
+## Development Branch
 
-> **A deployable RAG evaluation service that detects regressions and provides evidence for deployment decisions.**
-
-The development priority is:
-
-```text
-Working evaluator
-      ↓
-Real API
-      ↓
-Real frontend
-      ↓
-Deployable application
-      ↓
-Security + reliability
-      ↓
-CI/CD automation
-```
-
-Features should be added only when they strengthen this core workflow.
-
----
-
-# What This Project Demonstrates
-
-This project demonstrates practical engineering in:
-
-- RAG systems
-- LLM evaluation
-- claim-level verification
-- hallucination/faithfulness analysis
-- answerability evaluation
-- regression testing
-- deployment gating
-- LLMOps
-- evaluation artifact management
-- model/provider configuration
-- Next.js frontend development
-- FastAPI backend development
-- API-based architecture
-- deployment engineering
-- AI safety testing
-
-The central engineering principle is:
-
-> **RAG quality should be treated as a release criterion, not just a demo metric.**
-
----
-
-# Future User Experience
-
-The intended final experience is:
+The current stabilization work is maintained on:
 
 ```text
-User opens the web application
-            ↓
-Creates or uploads an evaluation
-            ↓
-Platform evaluates the RAG system
-            ↓
-Dashboard shows:
-    • Faithfulness
-    • Coverage
-    • Final score
-    • Claims
-    • Evidence
-    • Retrieved context
-    • Regression status
-            ↓
-User inspects failures
-            ↓
-Deployment Gate:
-    PROMOTE / BLOCK
+v1-stabilization
 ```
 
-The platform should make the evaluation process understandable to both engineers and teams operating RAG applications.
-
----
-
-# Author
+## Author
 
 **Sahib Taj Singh**
 
-GitHub:
+B.Tech — Artificial Intelligence and Machine Learning
 
-https://github.com/SahibTaj
-
-Portfolio:
-
-https://sahibtaj.github.io/portfolio/
-
----
-
-# License
-
-Add an appropriate open-source license before presenting the deployed service as an open-source project.
+- GitHub: https://github.com/SahibTaj
+- Repository: https://github.com/SahibTaj/Regression-Safe-RAG-Deployment-Guardrails
