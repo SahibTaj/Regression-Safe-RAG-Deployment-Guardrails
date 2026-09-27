@@ -24,26 +24,40 @@ The platform focuses on:
 Add your screenshots at the locations below.
 
 ### Dashboard
+<img width="1827" height="846" alt="image" src="https://github.com/user-attachments/assets/473b73bb-89cb-4bee-9b2f-7a3b067fe26e" />
+<img width="1807" height="832" alt="image" src="https://github.com/user-attachments/assets/d2b33074-5d96-4048-bcad-c0ecd598c3ef" />
+
 
 <!-- Add dashboard screenshot here -->
 <!-- Suggested path: docs/images/dashboard.png -->
 
 ### Evaluation Runs
+<img width="1822" height="841" alt="image" src="https://github.com/user-attachments/assets/660e7bea-f6d0-43e6-be7e-11c90dc4c067" />
+
 
 <!-- Add Evaluation Runs screenshot here -->
 <!-- Suggested path: docs/images/evaluation-runs.png -->
 
 ### Deployment Gate
+<img width="1827" height="867" alt="image" src="https://github.com/user-attachments/assets/7565c33a-bf49-4d8c-99f2-e24de5b8110f" />
+<img width="1812" height="847" alt="image" src="https://github.com/user-attachments/assets/d18d72c9-6e93-4d84-b5d8-a11d587056f6" />
+
 
 <!-- Add Deployment Gate screenshot here -->
 <!-- Suggested path: docs/images/deployment-gate.png -->
 
 ### Baseline Comparison
+<img width="1816" height="836" alt="image" src="https://github.com/user-attachments/assets/7a01e61e-c9d2-4287-8727-6c54d2dd629c" />
+<img width="1790" height="832" alt="image" src="https://github.com/user-attachments/assets/4de7b817-1386-4c96-8b90-d6056fe94a9d" />
+
 
 <!-- Add Baseline Comparison screenshot here -->
 <!-- Suggested path: docs/images/baseline-comparison.png -->
 
 ### Analytics
+<img width="1792" height="848" alt="image" src="https://github.com/user-attachments/assets/c85c338f-415f-458b-baa6-2b115d1cd913" />
+<img width="1795" height="826" alt="image" src="https://github.com/user-attachments/assets/4d42c537-3e19-418b-a088-f7a1654df898" />
+
 
 <!-- Add Analytics screenshot here -->
 <!-- Suggested path: docs/images/analytics.png -->
