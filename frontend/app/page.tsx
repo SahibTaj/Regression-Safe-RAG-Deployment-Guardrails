@@ -499,18 +499,21 @@ export default function DashboardPage() {
     }
 
     try {
-      const result = await apiRequest(
+      const result = (await apiRequest(
         `/runs/${encodeURIComponent(normalizedRunId)}/result`
-      );
+      )) as RunResultResponse;
 
       console.log("Run result received:", result);
+
+      setDashboard((previous) => ({
+        ...previous,
+        result,
+      }));
 
       return result;
     } catch (error) {
       console.error("Failed to fetch run result:", error);
 
-      // Do not throw the error again.
-      // This prevents an unhandled promise rejection.
       return null;
     }
   }, []);

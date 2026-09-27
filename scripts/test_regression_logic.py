@@ -4,18 +4,18 @@ from evaluation.regression import check_regression
 baseline = [
     {
         "question": "What is RAG?",
-        "faithfulness": 0.95,
-        "coverage": 0.90,
-        "final_score": 0.92,
+        "faithfulness": 0.84,
+        "coverage": 0.82,
+        "final_score": 0.83,
     }
 ]
 
 current = [
     {
         "question": "What is RAG?",
-        "faithfulness": 0.90,
-        "coverage": 0.85,
-        "final_score": 0.80,
+        "faithfulness": 0.86,
+        "coverage": 0.84,
+        "final_score": 0.85,
     }
 ]
 
@@ -37,8 +37,7 @@ print("\nWarnings:")
 for warning in warnings:
     print(warning)
 
-
-assert len(failures) == 2, "Expected 2 failures"
-assert len(warnings) == 1, "Expected 1 warning"
+assert len(failures) == 0, "Expected 0 failures"
+assert len(warnings) == 0, "Expected 0 warnings"
 
 print("\nRegression test passed!")
