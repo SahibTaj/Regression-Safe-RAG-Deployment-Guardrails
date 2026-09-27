@@ -66,6 +66,27 @@ The platform focuses on:
 <!-- Add Analytics screenshot here -->
 <!-- Suggested path: docs/images/analytics.png -->
 
+## Evaluation & Configuration Experiments
+
+The platform was evaluated across multiple RAG configurations to measure the
+effect of chunking and retrieval parameters on answer quality.
+
+| Chunk Size | Overlap | Top-K | Faithfulness | Coverage | Final Score |
+|---:|---:|---:|---:|---:|---:|
+| 1000 | 200 | 4 | 84.2% | 82.1% | 83.6% |
+| 500 | 100 | 4 | 76.2% | 78.6% | 76.9% |
+| 500 | 100 | 6 | 81.8% | 85.7% | 83.0% |
+
+These experiments demonstrate that retrieval configuration changes can
+materially affect RAG evaluation results. The deployment gate remains
+independent of these experiments and compares candidate runs against the
+accepted baseline.
+
+## Evaluation Run History
+
+| Run | Questions | Faithfulness | Coverage | Final Score | Deployment Status |
+|---|---:|---:|---:|---:|---|
+| ... | 28 | ... | ... | ... | ... |
 
 ## Key Features
 
