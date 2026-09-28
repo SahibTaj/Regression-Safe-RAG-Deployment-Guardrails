@@ -66,6 +66,7 @@ The platform focuses on:
 <!-- Add Analytics screenshot here -->
 <!-- Suggested path: docs/images/analytics.png -->
 
+
 ## Evaluation & Configuration Experiments
 
 The platform was evaluated across multiple RAG configurations to measure the
@@ -218,6 +219,17 @@ Persist and display the result
 
 ## Project Structure
 
+| Directory | Purpose |
+|-----------|---------|
+| `backend/` | FastAPI backend and API orchestration |
+| `evaluation/` | RAG evaluation and quality metrics |
+| `rag/` | Retrieval and generation pipeline |
+| `baselines/` | Baseline configuration and comparison |
+| `runs/` | Evaluation run persistence |
+| `frontend/` | Next.js dashboard |
+| `observability/` | Evaluation/run observability |
+| `security/` | Safety and guardrail-related modules |
+
 ```text
 Regression-Safe-RAG-Guardrails-Evaluation-Platform/
 |
@@ -253,7 +265,27 @@ Regression-Safe-RAG-Guardrails-Evaluation-Platform/
 `-- README.md
 ```
 
+## Deployment Gate
+
+| Check | Purpose |
+|-------|---------|
+| Faithfulness | Checks whether generated claims are supported by retrieved evidence |
+| Coverage | Checks whether the response addresses the expected information |
+| Baseline Comparison | Compares the candidate against the accepted baseline |
+| Regression Detection | Identifies quality degradation |
+| Safety Checks | Detects unsupported claims, insufficient context, and unanswerable questions |
+| Deployment Gate | Produces the final deployment decision based on configured evaluation conditions |
+
 ## API Endpoints
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/health` | Check backend health |
+| POST | `/runs` | Start a new evaluation run |
+| GET | `/runs` | List evaluation runs |
+| GET | `/runs/{run_id}` | Get evaluation run details |
+| GET | `/runs/{run_id}/result` | Get evaluation result |
+| GET | `/baseline` | Get the configured baseline |
 
 ### Health Check
 
