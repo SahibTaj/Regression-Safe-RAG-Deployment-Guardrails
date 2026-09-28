@@ -82,11 +82,13 @@ materially affect RAG evaluation results. The deployment gate remains
 independent of these experiments and compares candidate runs against the
 accepted baseline.
 
-## Evaluation Run History
+## Evaluation Results
 
-| Run | Questions | Faithfulness | Coverage | Final Score | Deployment Status |
-|---|---:|---:|---:|---:|---|
-| ... | 28 | ... | ... | ... | ... |
+| Configuration | Questions | Faithfulness | Coverage | Final Score |
+|---------------|-----------|--------------|----------|-------------|
+| Chunk 1000 / Overlap 200 / Top-K 4 | 28 | 84.2% | 82.1% | 83.6% |
+| Chunk 500 / Overlap 100 / Top-K 4  | 28 | 76.2% | 78.6% | 76.9% |
+| Chunk 500 / Overlap 100 / Top-K 6  | 28 | 81.8% | 85.7% | 83.0% |
 
 ## Key Features
 
