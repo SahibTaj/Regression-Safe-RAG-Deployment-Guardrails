@@ -139,23 +139,23 @@ A blocked result means that the candidate did not satisfy the configured promoti
 ## Architecture
 
 ```text
-                 Next.js Frontend
-                        |
-                    REST API
-                        |
-                 FastAPI Backend
-                        |
-              Evaluation Service
+              Next.js Frontend
+                    |
+                REST API
+                    |
+              FastAPI Backend
+                    |
+             Evaluation Service
           _________|___________
          |         |           |
       RAG       Evaluation   Run/Result
     Pipeline    Modules      Persistence
          |         |           |
-      Retrieval  Claims     Baseline
-      Generation Faithfulness Candidate
+    Retrieval    Claims     Baseline
+    Generation  Faithfulness  Candidate
       Safety     Coverage    Results
-                        |
-                 Deployment Gate
+                    |
+              Deployment Gate
 ```
 
 ## Evaluation Workflow
