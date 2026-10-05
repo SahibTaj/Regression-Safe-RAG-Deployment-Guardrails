@@ -1,0 +1,21 @@
+{
+  "metadata": {
+    "answer_model": "openai/gpt-oss-120b",
+    "eval_model": "qwen/qwen3.8-27b",
+    "timestamp": "2026-09-18T15:29:43.133495"
+  },
+  "results": [
+    {
+      "question": "What is retrieval augmented generation (RAG) and why is it used?",
+      "faithfulness": 1.0,
+      "coverage": 1.0,
+      "coverage_details": {
+        "answerable": true,
+        "abstained": false,
+        "extraction_failed": false,
+        "reason": "Context defines RAG and lists reasons like accessing new data and reducing hallucinations."
+      },
+      "final_score": 1.0
+    }
+  ]
+}

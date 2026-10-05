@@ -1,0 +1,1058 @@
+{
+  "metadata": {
+    "created_at": "2026-09-23T19:51:58.074079",
+    "answer_model": "openai/gpt-oss-120b",
+    "eval_model": "qwen/qwen3.8-27b",
+    "question_count": 28,
+    "mode": "candidate"
+  },
+  "results": [
+    {
+      "question": "What is retrieval augmented generation (RAG) and why is it used?",
+      "answer": "Retrieval\u2011augmented generation (RAG) is a technique that lets a large language model first **search for and pull in relevant text from external sources**\u2014such as databases, uploaded documents, or web pages\u2014before it generates its answer. The model does not reply to a user query until it has consulted a specified set of documents, which supplement the knowledge stored in its original training data.\n\nRAG is used because it:\n\n* Gives the model access to **domain\u2011specific or up\u2011to\u2011date information** that isn\u2019t present in its static training set.  \n* Helps chatbots and other LLM\u2011based applications retrieve internal company data or cite authoritative sources.  \n* **Reduces hallucinations** by grounding responses in actual retrieved content.  \n* Cuts the need to **re\u2011train the model** whenever new data become available, saving computational and financial resources.  \n* Allows the model to **include source citations**, giving users a way to verify the information and increasing transparency.",
+      "claims": [],
+      "claim_extraction_failed": true,
+      "faithfulness": 1.0,
+      "faithfulness_details": [],
+      "coverage": 1.0,
+      "coverage_details": {
+        "answerable": true,
+        "abstained": false,
+        "extraction_failed": true,
+        "reason": "Context defines RAG and lists reasons like accessing new data and reducing hallucinations."
+      },
+      "final_score": 1.0
+    },
+    {
+      "question": "Explain how embeddings help in semantic search.",
+      "answer": "Embeddings turn words, phrases, documents (or other data such as images and audio) into real\u2011valued vectors that capture meaning: items with similar meanings end up close together in the high\u2011dimensional vector space. A vector database stores these vectors and uses approximate\u2011nearest\u2011neighbor algorithms to compare a query\u2019s embedding with the stored ones. Because similarity is measured by distance in the vector space rather than by exact text matching, the system can retrieve records that are semantically alike to the input\u2014enabling semantic (meaning\u2011based) search.",
+      "claims": [
+        {
+          "id": 1,
+          "text": "Embeddings turn words, phrases, documents, images, and audio into real-valued vectors."
+        },
+        {
+          "id": 2,
+          "text": "Embeddings capture meaning."
+        },
+        {
+          "id": 3,
+          "text": "Items with similar meanings end up close together in the high-dimensional vector space."
+        },
+        {
+          "id": 4,
+          "text": "A vector database stores vectors."
+        },
+        {
+          "id": 5,
+          "text": "A vector database uses approximate-nearest-neighbor algorithms."
+        },
+        {
+          "id": 6,
+          "text": "Vector databases compare a query's embedding with stored embeddings."
+        },
+        {
+          "id": 7,
+          "text": "Similarity in vector databases is measured by distance in the vector space."
+        },
+        {
+          "id": 8,
+          "text": "Similarity in vector databases is not measured by exact text matching."
+        },
+        {
+          "id": 9,
+          "text": "Vector databases can retrieve records that are semantically alike to the input."
+        },
+        {
+          "id": 10,
+          "text": "Vector databases enable semantic search."
+        }
+      ],
+      "claim_extraction_failed": false,
+      "faithfulness": 0.8,
+      "faithfulness_details": [
+        {
+          "claim": "Embeddings turn words, phrases, documents, images, and audio into real-valued vectors.",
+          "supported": true,
+          "evidence": "Words, phrases, or entire documents, as well as images, audio... can all be"
+        },
+        {
+          "claim": "Embeddings capture meaning.",
+          "supported": true,
+          "evidence": "representation is a real-valued vector that encodes the meaning of the word"
+        },
+        {
+          "claim": "Items with similar meanings end up close together in the high-dimensional vector space.",
+          "supported": true,
+          "evidence": "words that are closer in the vector space are expected to be similar in meaning"
+        },
+        {
+          "claim": "A vector database stores vectors.",
+          "supported": true,
+          "evidence": "database that stores and retrieves embeddings of data in vector space"
+        },
+        {
+          "claim": "A vector database uses approximate-nearest-neighbor algorithms.",
+          "supported": true,
+          "evidence": "Vector databases typically implement approximate nearest neighbor algorithms"
+        },
+        {
+          "claim": "Vector databases compare a query's embedding with stored embeddings.",
+          "supported": false,
+          "evidence": "Context does not explicitly describe the comparison mechanism between query and stored embeddings."
+        },
+        {
+          "claim": "Similarity in vector databases is measured by distance in the vector space.",
+          "supported": false,
+          "evidence": "Context mentions vector space but does not explicitly state similarity is measured by distance."
+        },
+        {
+          "claim": "Similarity in vector databases is not measured by exact text matching.",
+          "supported": true,
+          "evidence": "unlike traditional databases which primarily look up records by exact match"
+        },
+        {
+          "claim": "Vector databases can retrieve records that are semantically alike to the input.",
+          "supported": true,
+          "evidence": "search for records semantically similar to a given input"
+        },
+        {
+          "claim": "Vector databases enable semantic search.",
+          "supported": true,
+          "evidence": "Use-cases for vector databases include... semantic search"
+        }
+      ],
+      "coverage": 1.0,
+      "coverage_details": {
+        "answerable": true,
+        "abstained": false,
+        "extraction_failed": false,
+        "reason": "Context explains vector databases use embeddings for semantic search via approximate nearest neighbor algorithms."
+      },
+      "final_score": 0.8599999999999999
+    },
+    {
+      "question": "What is cosine similarity and why is it commonly used with embeddings?",
+      "answer": "Cosine similarity is a way of measuring how alike two non\u2011zero vectors are by looking at the angle between them.  Mathematically it is the dot product of the vectors divided by the product of their lengths, so it depends only on direction, not on the vectors\u2019 magnitudes.  Its value ranges from \u20131 (opposite directions) through 0 (orthogonal) to +1 (identical direction); when the vector components are all non\u2011negative the range is 0 to 1.\n\nIt is widely used with embeddings because embeddings are high\u2011dimensional vectors that represent items (e.g., words, documents, images).  Cosine similarity lets us compare those items based on the orientation of their vectors, giving a measure of semantic or topical similarity that is independent of the overall length or scale of the vectors.  Additionally, the computation is cheap\u2014especially for sparse vectors\u2014since only the non\u2011zero coordinates need to be considered.  This makes cosine similarity a practical and effective choice for comparing embedding vectors.",
+      "claims": [],
+      "claim_extraction_failed": true,
+      "faithfulness": 1.0,
+      "faithfulness_details": [],
+      "coverage": 1.0,
+      "coverage_details": {
+        "answerable": false,
+        "abstained": false,
+        "extraction_failed": true,
+        "reason": "Context defines cosine similarity but does not mention embeddings or why it is used with them."
+      },
+      "final_score": 1.0
+    },
+    {
+      "question": "What is the role of a vector database in a RAG pipeline?",
+      "answer": "In a Retrieval\u2011Augmented Generation (RAG) pipeline, the vector database stores the embeddings of the reference documents (or other data) in a high\u2011dimensional vector space. When a user query arrives, the retriever queries the vector database to perform an approximate\u2011nearest\u2011neighbor search, pulling back the most semantically similar documents. Those retrieved documents are then used to augment the prompt that the LLM receives, enabling the model to generate answers that incorporate up\u2011to\u2011date external knowledge. Thus, the vector database\u2019s role is to hold the embedded knowledge and provide fast, similarity\u2011based retrieval of relevant content for the RAG process.",
+      "claims": [
+        {
+          "id": 1,
+          "text": "In a Retrieval-Augmented Generation (RAG) pipeline, the vector database stores the embeddings of reference documents or other data."
+        },
+        {
+          "id": 2,
+          "text": "The embeddings in a RAG pipeline are stored in a high-dimensional vector space."
+        },
+        {
+          "id": 3,
+          "text": "When a user query arrives in a RAG pipeline, the retriever queries the vector database."
+        },
+        {
+          "id": 4,
+          "text": "The retriever performs an approximate-nearest-neighbor search on the vector database."
+        },
+        {
+          "id": 5,
+          "text": "The retriever pulls back the most semantically similar documents."
+        },
+        {
+          "id": 6,
+          "text": "Retrieved documents are used to augment the prompt that the LLM receives."
+        },
+        {
+          "id": 7,
+          "text": "Augmenting the prompt enables the LLM to generate answers that incorporate up-to-date external knowledge."
+        },
+        {
+          "id": 8,
+          "text": "The vector database holds embedded knowledge for the RAG process."
+        },
+        {
+          "id": 9,
+          "text": "The vector database provides fast, similarity-based retrieval of relevant content for the RAG process."
+        }
+      ],
+      "claim_extraction_failed": false,
+      "faithfulness": 1.0,
+      "faithfulness_details": [
+        {
+          "claim": "In a Retrieval-Augmented Generation (RAG) pipeline, the vector database stores the embeddings of reference documents or other data.",
+          "supported": true,
+          "evidence": "These embeddings are then stored in a vector database to allow for document retrieval."
+        },
+        {
+          "claim": "The embeddings in a RAG pipeline are stored in a high-dimensional vector space.",
+          "supported": true,
+          "evidence": "Vector embeddings are mathematical representations of data in a high-dimensional space."
+        },
+        {
+          "claim": "When a user query arrives in a RAG pipeline, the retriever queries the vector database.",
+          "supported": true,
+          "evidence": "Given a user query, a document retriever is first called to select the most relevant documents."
+        },
+        {
+          "claim": "The retriever performs an approximate-nearest-neighbor search on the vector database.",
+          "supported": true,
+          "evidence": "Vector databases typically implement approximate nearest neighbor algorithms so users can search for records semantically similar."
+        },
+        {
+          "claim": "The retriever pulls back the most semantically similar documents.",
+          "supported": true,
+          "evidence": "search for records semantically similar to a given input... select the most relevant documents"
+        },
+        {
+          "claim": "Retrieved documents are used to augment the prompt that the LLM receives.",
+          "supported": true,
+          "evidence": "documents that will be used to augment the query... LLM draws from the augmented prompt"
+        },
+        {
+          "claim": "Augmenting the prompt enables the LLM to generate answers that incorporate up-to-date external knowledge.",
+          "supported": true,
+          "evidence": "augment the model\u2019s external knowledge base with the updated information... synthesize an engaging answer"
+        },
+        {
+          "claim": "The vector database holds embedded knowledge for the RAG process.",
+          "supported": true,
+          "evidence": "database that stores and retrieves embeddings of data in vector space... retrieval-augmented generation (RAG)"
+        },
+        {
+          "claim": "The vector database provides fast, similarity-based retrieval of relevant content for the RAG process.",
+          "supported": true,
+          "evidence": "search for records semantically similar... retrieval-augmented generation (RAG)"
+        }
+      ],
+      "coverage": 1.0,
+      "coverage_details": {
+        "answerable": true,
+        "abstained": false,
+        "extraction_failed": false,
+        "reason": "Context states vector databases store embeddings to allow document retrieval for RAG."
+      },
+      "final_score": 1.0
+    },
+    {
+      "question": "What is FAISS and what problem does it solve?",
+      "answer": "FAISS (Facebook AI Similarity Search) is an open\u2011source library that provides algorithms for similarity search and clustering of vectors. It lets you efficiently find nearest\u2011neighbor vectors\u2014even in very large collections that may not fit into RAM\u2014by offering a variety of indexing methods, compression techniques, and GPU\u2011accelerated implementations. In short, FAISS solves the problem of fast, scalable similarity (nearest\u2011neighbor) search on high\u2011dimensional vector data.",
+      "claims": [
+        {
+          "id": 1,
+          "text": "FAISS stands for Facebook AI Similarity Search."
+        },
+        {
+          "id": 2,
+          "text": "FAISS is an open-source library."
+        },
+        {
+          "id": 3,
+          "text": "FAISS provides algorithms for similarity search of vectors."
+        },
+        {
+          "id": 4,
+          "text": "FAISS provides algorithms for clustering of vectors."
+        },
+        {
+          "id": 5,
+          "text": "FAISS allows users to find nearest-neighbor vectors."
+        },
+        {
+          "id": 6,
+          "text": "FAISS can operate on collections that may not fit into RAM."
+        },
+        {
+          "id": 7,
+          "text": "FAISS offers a variety of indexing methods."
+        },
+        {
+          "id": 8,
+          "text": "FAISS offers compression techniques."
+        },
+        {
+          "id": 9,
+          "text": "FAISS offers GPU-accelerated implementations."
+        },
+        {
+          "id": 10,
+          "text": "FAISS is used for similarity search on high-dimensional vector data."
+        }
+      ],
+      "claim_extraction_failed": false,
+      "faithfulness": 1.0,
+      "faithfulness_details": [
+        {
+          "claim": "FAISS stands for Facebook AI Similarity Search.",
+          "supported": true,
+          "evidence": "FAISS (Facebook AI Similarity Search) is an open-source library"
+        },
+        {
+          "claim": "FAISS is an open-source library.",
+          "supported": true,
+          "evidence": "FAISS (Facebook AI Similarity Search) is an open-source library"
+        },
+        {
+          "claim": "FAISS provides algorithms for similarity search of vectors.",
+          "supported": true,
+          "evidence": "open-source library for similarity search and clustering of vectors"
+        },
+        {
+          "claim": "FAISS provides algorithms for clustering of vectors.",
+          "supported": true,
+          "evidence": "open-source library for similarity search and clustering of vectors"
+        },
+        {
+          "claim": "FAISS allows users to find nearest-neighbor vectors.",
+          "supported": true,
+          "evidence": "See also Nearest neighbor search Similarity search"
+        },
+        {
+          "claim": "FAISS can operate on collections that may not fit into RAM.",
+          "supported": true,
+          "evidence": "search in sets of vectors of any size, up to ones that possibly do not fit in RAM"
+        },
+        {
+          "claim": "FAISS offers a variety of indexing methods.",
+          "supported": true,
+          "evidence": "FAISS is organized as a toolbox that contains a variety of indexing methods"
+        },
+        {
+          "claim": "FAISS offers compression techniques.",
+          "supported": true,
+          "evidence": "FAISS has a standalone Vector Codec functionality for the lossy compression of vectors"
+        },
+        {
+          "claim": "FAISS offers GPU-accelerated implementations.",
+          "supported": true,
+          "evidence": "Some of the most useful algorithms are implemented on the GPU using CUDA"
+        },
+        {
+          "claim": "FAISS is used for similarity search on high-dimensional vector data.",
+          "supported": true,
+          "evidence": "FAISS was reported to index 1.5 trillion 144-dimensional vectors"
+        }
+      ],
+      "coverage": 1.0,
+      "coverage_details": {
+        "answerable": true,
+        "abstained": false,
+        "extraction_failed": false,
+        "reason": "Context defines FAISS as a library for similarity search and clustering of vectors."
+      },
+      "final_score": 1.0
+    },
+    {
+      "question": "Explain the difference between a Transformer model and an RNN.",
+      "answer": "A Transformer and an RNN differ in how they handle sequences.  \n\n* **RNNs** (including Elman networks and LSTMs) process a sequence **one token at a time**, passing a hidden state forward from one step to the next.  Because the computation is sequential, they can suffer from the vanishing\u2011gradient problem, which makes it hard for information from early tokens to influence later ones.  LSTMs improved this by using gating mechanisms, but they still rely on sequential processing.  \n\n* **Transformers** replace recurrence with **self\u2011attention**.  Each token can attend to every other token in the same layer, allowing the whole sequence to be processed **in parallel**.  A Transformer layer consists of attention sub\u2011layers, feed\u2011forward neural networks (the FFN modules), residual connections and layer\u2011normalization.  Because there is no recurrent hidden state, Transformers avoid the vanishing\u2011gradient issue and can scale to much larger datasets and model sizes.  \n\nIn short, RNNs model sequences step\u2011by\u2011step with a recurrent hidden state, while Transformers model sequences by attending to all positions simultaneously using attention and feed\u2011forward layers.",
+      "claims": [],
+      "claim_extraction_failed": true,
+      "faithfulness": 1.0,
+      "faithfulness_details": [],
+      "coverage": 1.0,
+      "coverage_details": {
+        "answerable": true,
+        "abstained": false,
+        "extraction_failed": true,
+        "reason": "Context details RNN sequential processing and vanishing gradients versus Transformer parallelism and attention."
+      },
+      "final_score": 1.0
+    },
+    {
+      "question": "What is self-attention in Transformers?",
+      "answer": "Self\u2011attention is the attention mechanism used in Transformers in which every element (token) of the input sequence computes attention scores with respect to **all** other elements in that same sequence. This lets each token directly \u201clook at\u201d any other token, giving it equal access to the whole sentence and enabling the model to capture global dependencies without relying on recurrent connections. It is the core operation that replaces recurrence in the Transformer architecture.",
+      "claims": [
+        {
+          "id": 1,
+          "text": "Self-attention is the attention mechanism used in Transformers."
+        },
+        {
+          "id": 2,
+          "text": "In self-attention, every element of the input sequence computes attention scores with respect to all other elements in that same sequence."
+        },
+        {
+          "id": 3,
+          "text": "Self-attention allows each token to directly look at any other token."
+        },
+        {
+          "id": 4,
+          "text": "Self-attention gives each token equal access to the whole sentence."
+        },
+        {
+          "id": 5,
+          "text": "Self-attention enables the model to capture global dependencies without relying on recurrent connections."
+        },
+        {
+          "id": 6,
+          "text": "Self-attention is the core operation that replaces recurrence in the Transformer architecture."
+        }
+      ],
+      "claim_extraction_failed": false,
+      "faithfulness": 1.0,
+      "faithfulness_details": [
+        {
+          "claim": "Self-attention is the attention mechanism used in Transformers.",
+          "supported": true,
+          "evidence": "The major breakthrough came with self-attention... This idea was central to the Transformer architecture"
+        },
+        {
+          "claim": "In self-attention, every element of the input sequence computes attention scores with respect to all other elements in that same sequence.",
+          "supported": true,
+          "evidence": "self-attention, where each element in the input sequence attends to all others"
+        },
+        {
+          "claim": "Self-attention allows each token to directly look at any other token.",
+          "supported": true,
+          "evidence": "Attention allows a token equal access to any part of a sentence directly"
+        },
+        {
+          "claim": "Self-attention gives each token equal access to the whole sentence.",
+          "supported": true,
+          "evidence": "Attention allows a token equal access to any part of a sentence directly"
+        },
+        {
+          "claim": "Self-attention enables the model to capture global dependencies without relying on recurrent connections.",
+          "supported": true,
+          "evidence": "enabling the model to capture global dependencies... replaced recurrence with attention mechanisms"
+        },
+        {
+          "claim": "Self-attention is the core operation that replaces recurrence in the Transformer architecture.",
+          "supported": true,
+          "evidence": "This idea was central to the Transformer architecture, which replaced recurrence with attention mechanisms"
+        }
+      ],
+      "coverage": 1.0,
+      "coverage_details": {
+        "answerable": true,
+        "abstained": false,
+        "extraction_failed": false,
+        "reason": "Context defines self-attention as each element attending to all others to capture global dependencies."
+      },
+      "final_score": 1.0
+    },
+    {
+      "question": "What is BERT and how is it different from GPT-style models?",
+      "answer": "BERT is a bidirectional language model that is pre\u2011trained on two tasks:  \n\n* **Masked language modeling (MLM)** \u2013 a random word in a sentence is replaced with a\u202f[MASK] token and the model must predict the original word, giving it access to context on both the left and the right of the masked token.  \n* **Next\u2011sentence prediction (NSP)** \u2013 the model learns to decide whether one sentence logically follows another, helping it capture relationships between sentences.  \n\nBecause it relies on masked\u2011token prediction, BERT sees the whole sentence at once and uses information from both sides of each token. This makes it difficult to generate text directly; na\u00efvely masking an entire continuation of a prompt creates a dataset shift that degrades performance.\n\nGPT\u2011style models, in contrast, are trained with **autoregressive** objectives. They predict the next token given only the left\u2011hand context, then reveal that token and predict the following one, proceeding token by token. This left\u2011to\u2011right, generative training lets GPT models generate coherent continuations of a prompt more naturally.  \n\nThus, BERT is a bidirectional, masked\u2011token model focused on understanding context, while GPT models are left\u2011to\u2011right, autoregressive models designed for text generation.",
+      "claims": [],
+      "claim_extraction_failed": true,
+      "faithfulness": 1.0,
+      "faithfulness_details": [],
+      "coverage": 1.0,
+      "coverage_details": {
+        "answerable": true,
+        "abstained": false,
+        "extraction_failed": true,
+        "reason": "Context describes BERT's masked training and contrasts it with GPT's autoregressive training."
+      },
+      "final_score": 1.0
+    },
+    {
+      "question": "What is ONNX Runtime and why is it used for inference?",
+      "answer": "ONNX Runtime is a cross\u2011platform machine\u2011learning model accelerator that provides a flexible interface for integrating hardware\u2011specific libraries. It can load ONNX models created in many frameworks (PyTorch, TensorFlow/Keras, TFLite, scikit\u2011learn, etc.) and applies graph optimizations and hardware\u2011specific sub\u2011graph partitioning. Because of these optimizations and its ability to run on many different hardware and operating\u2011system environments, ONNX Runtime is used to perform inference with higher speed and efficiency than the original training framework.",
+      "claims": [],
+      "claim_extraction_failed": true,
+      "faithfulness": 1.0,
+      "faithfulness_details": [],
+      "coverage": 1.0,
+      "coverage_details": {
+        "answerable": true,
+        "abstained": false,
+        "extraction_failed": true,
+        "reason": "Context defines ONNX Runtime as a cross-platform accelerator and lists inference use cases."
+      },
+      "final_score": 1.0
+    },
+    {
+      "question": "What is INT8 quantization and how can it improve inference speed?",
+      "answer": "INT8 quantization is the practice of representing the values in a model (or signal) with 8\u2011bit fixed\u2011point words\u2014that is, each value is mapped to one of 256 possible integer levels. By using this much smaller word length instead of higher\u2011precision formats, the amount of data that must be stored, moved, and processed is reduced. The reduced data size and the simpler integer arithmetic required for the forward\u2011quantization (classification) and reconstruction (inverse\u2011quantization) stages lower memory\u2011bandwidth and computational demands, which can translate into faster inference execution.",
+      "claims": [
+        {
+          "id": 1,
+          "text": "INT8 quantization represents model or signal values with 8-bit fixed-point words."
+        },
+        {
+          "id": 2,
+          "text": "In INT8 quantization, each value is mapped to one of 256 possible integer levels."
+        },
+        {
+          "id": 3,
+          "text": "Using 8-bit fixed-point words reduces the amount of data that must be stored, moved, and processed compared to higher-precision formats."
+        },
+        {
+          "id": 4,
+          "text": "INT8 quantization requires simpler integer arithmetic for forward-quantization and reconstruction stages."
+        },
+        {
+          "id": 5,
+          "text": "The reduced data size and simpler integer arithmetic of INT8 quantization lower memory-bandwidth and computational demands."
+        },
+        {
+          "id": 6,
+          "text": "Lower memory-bandwidth and computational demands from INT8 quantization can translate into faster inference execution."
+        }
+      ],
+      "claim_extraction_failed": false,
+      "faithfulness": 0.3333333333333333,
+      "faithfulness_details": [
+        {
+          "claim": "INT8 quantization represents model or signal values with 8-bit fixed-point words.",
+          "supported": true,
+          "evidence": "Most commonly, these discrete values are represented as fixed-point words... common word lengths are 8-bit"
+        },
+        {
+          "claim": "In INT8 quantization, each value is mapped to one of 256 possible integer levels.",
+          "supported": true,
+          "evidence": "common word lengths are 8-bit (256 levels)"
+        },
+        {
+          "claim": "Using 8-bit fixed-point words reduces the amount of data that must be stored, moved, and processed compared to higher-precision formats.",
+          "supported": false,
+          "evidence": "Context does not mention storage, movement, or processing data reduction."
+        },
+        {
+          "claim": "INT8 quantization requires simpler integer arithmetic for forward-quantization and reconstruction stages.",
+          "supported": false,
+          "evidence": "Context does not mention integer arithmetic simplicity for quantization stages."
+        },
+        {
+          "claim": "The reduced data size and simpler integer arithmetic of INT8 quantization lower memory-bandwidth and computational demands.",
+          "supported": false,
+          "evidence": "Context does not mention memory-bandwidth or computational demands."
+        },
+        {
+          "claim": "Lower memory-bandwidth and computational demands from INT8 quantization can translate into faster inference execution.",
+          "supported": false,
+          "evidence": "Context does not mention inference execution speed."
+        }
+      ],
+      "coverage": 1.0,
+      "coverage_details": {
+        "answerable": false,
+        "abstained": false,
+        "extraction_failed": false,
+        "reason": "Context mentions 8-bit levels but does not define INT8 or explain inference speed improvements."
+      },
+      "final_score": 0.5333333333333333
+    },
+    {
+      "question": "How does a retriever decide which document chunks to return?",
+      "answer": "A retriever first encodes the query and the stored text (usually as dense or sparse vectors) and then looks for the chunks whose vectors are most similar to the query\u2019s vector.\u202fIt typically returns the top\u2011k highest\u2011scoring chunks\u2014those that rank highest under the similarity measure used by the index.\u202fIn practice this can be done with pure vector search, a hybrid approach that adds traditional keyword matches, or with supervised\u2011training tricks that align the retriever\u2019s scores to the language model\u2019s likelihood (e.g., minimizing KL\u2011divergence on generated responses) and with reranking steps that promote the most relevant chunks.",
+      "claims": [],
+      "claim_extraction_failed": true,
+      "faithfulness": 1.0,
+      "faithfulness_details": [],
+      "coverage": 1.0,
+      "coverage_details": {
+        "answerable": false,
+        "abstained": false,
+        "extraction_failed": true,
+        "reason": "Context mentions methods depend on indexing but does not explain the specific decision mechanism."
+      },
+      "final_score": 1.0
+    },
+    {
+      "question": "What does 'chunk_size' and 'chunk_overlap' mean in text splitting, and why does it matter?",
+      "answer": "**Chunk size** is the length of each piece the text is cut into (e.g., a fixed number of characters, words, or tokens).  \n\n**Chunk overlap** is the amount of content that is repeated from one piece into the next piece (the \u201coverlap\u201d between consecutive chunks).\n\nThese parameters matter because:\n\n* **Fixed\u2011length, overlapping chunks are fast and easy to generate.**  \n* Overlap **preserves semantic context** across chunk boundaries, so information that would otherwise be split between two separate chunks remains available to the retriever or downstream model.  \n* Properly chosen sizes and overlaps improve the quality of retrieval, indexing, and any downstream processing that relies on the chunked representation.",
+      "claims": [
+        {
+          "id": 1,
+          "text": "Chunk size is the length of each piece the text is cut into."
+        },
+        {
+          "id": 2,
+          "text": "Chunk size can be defined as a fixed number of characters, words, or tokens."
+        },
+        {
+          "id": 3,
+          "text": "Chunk overlap is the amount of content that is repeated from one piece into the next piece."
+        },
+        {
+          "id": 4,
+          "text": "Fixed-length, overlapping chunks are fast to generate."
+        },
+        {
+          "id": 5,
+          "text": "Fixed-length, overlapping chunks are easy to generate."
+        },
+        {
+          "id": 6,
+          "text": "Overlap preserves semantic context across chunk boundaries."
+        },
+        {
+          "id": 7,
+          "text": "Overlap ensures information split between two separate chunks remains available to the retriever or downstream model."
+        },
+        {
+          "id": 8,
+          "text": "Properly chosen sizes and overlaps improve the quality of retrieval."
+        },
+        {
+          "id": 9,
+          "text": "Properly chosen sizes and overlaps improve the quality of indexing."
+        },
+        {
+          "id": 10,
+          "text": "Properly chosen sizes and overlaps improve the quality of downstream processing that relies on the chunked representation."
+        }
+      ],
+      "claim_extraction_failed": false,
+      "faithfulness": 0.3,
+      "faithfulness_details": [
+        {
+          "claim": "Chunk size is the length of each piece the text is cut into.",
+          "supported": false,
+          "evidence": "Context defines chunking as breaking data into vectors, not explicitly defining chunk size as length."
+        },
+        {
+          "claim": "Chunk size can be defined as a fixed number of characters, words, or tokens.",
+          "supported": false,
+          "evidence": "Context mentions fixed length, syntax-based, and file format-based, but does not define size as characters/words/tokens."
+        },
+        {
+          "claim": "Chunk overlap is the amount of content that is repeated from one piece into the next piece.",
+          "supported": false,
+          "evidence": "Context mentions overlapping consecutive chunks but does not define overlap as repeated content amount."
+        },
+        {
+          "claim": "Fixed-length, overlapping chunks are fast to generate.",
+          "supported": true,
+          "evidence": "Fixed length with overlap. This is fast and easy."
+        },
+        {
+          "claim": "Fixed-length, overlapping chunks are easy to generate.",
+          "supported": true,
+          "evidence": "Fixed length with overlap. This is fast and easy."
+        },
+        {
+          "claim": "Overlap preserves semantic context across chunk boundaries.",
+          "supported": true,
+          "evidence": "Overlapping consecutive chunks helps to maintain semantic context across chunks."
+        },
+        {
+          "claim": "Overlap ensures information split between two separate chunks remains available to the retriever or downstream model.",
+          "supported": false,
+          "evidence": "Context states overlap maintains semantic context, not specifically that split information remains available."
+        },
+        {
+          "claim": "Properly chosen sizes and overlaps improve the quality of retrieval.",
+          "supported": false,
+          "evidence": "Context does not state that proper sizes/overlaps improve retrieval quality."
+        },
+        {
+          "claim": "Properly chosen sizes and overlaps improve the quality of indexing.",
+          "supported": false,
+          "evidence": "Context does not state that proper sizes/overlaps improve indexing quality."
+        },
+        {
+          "claim": "Properly chosen sizes and overlaps improve the quality of downstream processing that relies on the chunked representation.",
+          "supported": false,
+          "evidence": "Context does not state that proper sizes/overlaps improve downstream processing quality."
+        }
+      ],
+      "coverage": 1.0,
+      "coverage_details": {
+        "answerable": false,
+        "abstained": false,
+        "extraction_failed": false,
+        "reason": "Context mentions chunking strategies but does not define specific parameters 'chunk_size' or 'chunk_overlap'."
+      },
+      "final_score": 0.51
+    },
+    {
+      "question": "Why can increasing chunk overlap improve retrieval quality in some cases?",
+      "answer": "Increasing chunk overlap helps preserve semantic context across adjacent chunks, ensuring that relevant information isn\u2019t split at chunk boundaries. This maintained context can make it easier for the retriever to find and match pertinent details, thereby improving retrieval quality.",
+      "claims": [
+        {
+          "id": 1,
+          "text": "Increasing chunk overlap helps preserve semantic context across adjacent chunks."
+        },
+        {
+          "id": 2,
+          "text": "Increasing chunk overlap ensures that relevant information isn\u2019t split at chunk boundaries."
+        },
+        {
+          "id": 3,
+          "text": "Maintained context can make it easier for the retriever to find and match pertinent details."
+        },
+        {
+          "id": 4,
+          "text": "Maintained context improves retrieval quality."
+        }
+      ],
+      "claim_extraction_failed": false,
+      "faithfulness": 0.25,
+      "faithfulness_details": [
+        {
+          "claim": "Increasing chunk overlap helps preserve semantic context across adjacent chunks.",
+          "supported": true,
+          "evidence": "Overlapping consecutive chunks helps to maintain semantic context across chunks."
+        },
+        {
+          "claim": "Increasing chunk overlap ensures that relevant information isn\u2019t split at chunk boundaries.",
+          "supported": false,
+          "evidence": "Context mentions maintaining semantic context, not ensuring information isn't split."
+        },
+        {
+          "claim": "Maintained context can make it easier for the retriever to find and match pertinent details.",
+          "supported": false,
+          "evidence": "Context does not state that maintained context makes it easier for retrievers to match details."
+        },
+        {
+          "claim": "Maintained context improves retrieval quality.",
+          "supported": false,
+          "evidence": "Context does not explicitly state that maintained context improves retrieval quality."
+        }
+      ],
+      "coverage": 1.0,
+      "coverage_details": {
+        "answerable": true,
+        "abstained": false,
+        "extraction_failed": false,
+        "reason": "Context states overlapping chunks help maintain semantic context across chunks."
+      },
+      "final_score": 0.475
+    },
+    {
+      "question": "When should you use a smaller ch unk size vs a larger chunk size in RAG?",
+      "answer": "I don't know.",
+      "claims": [],
+      "claim_extraction_failed": false,
+      "faithfulness": 1.0,
+      "faithfulness_details": [],
+      "coverage": 1.0,
+      "coverage_details": {
+        "answerable": false,
+        "abstained": true,
+        "extraction_failed": false,
+        "reason": "The provided context does not contain information about chunk size selection in RAG."
+      },
+      "final_score": 1.0
+    },
+    {
+      "question": "Does Mars have liquid water on its surface today?",
+      "answer": "I don't know.",
+      "claims": [],
+      "claim_extraction_failed": false,
+      "faithfulness": 1.0,
+      "faithfulness_details": [],
+      "coverage": 1.0,
+      "coverage_details": {
+        "answerable": false,
+        "abstained": true,
+        "extraction_failed": false,
+        "reason": "Context discusses Streamlit and AI in materials science, not Mars or water."
+      },
+      "final_score": 1.0
+    },
+    {
+      "question": "What is the capital of Australia and why do people confuse it with Sydney?",
+      "answer": "I don't know.",
+      "claims": [],
+      "claim_extraction_failed": false,
+      "faithfulness": 1.0,
+      "faithfulness_details": [],
+      "coverage": 1.0,
+      "coverage_details": {
+        "answerable": false,
+        "abstained": true,
+        "extraction_failed": false,
+        "reason": "Context contains no information about Australia, its capital, or Sydney."
+      },
+      "final_score": 1.0
+    },
+    {
+      "question": "Who is the current CEO of OpenAI?",
+      "answer": "I don't know.",
+      "claims": [],
+      "claim_extraction_failed": false,
+      "faithfulness": 1.0,
+      "faithfulness_details": [],
+      "coverage": 1.0,
+      "coverage_details": {
+        "answerable": false,
+        "abstained": true,
+        "extraction_failed": false,
+        "reason": "The provided context does not mention the name of OpenAI's CEO."
+      },
+      "final_score": 1.0
+    },
+    {
+      "question": "What is the latest version of LangChain available today?",
+      "answer": "I don't know.",
+      "claims": [],
+      "claim_extraction_failed": false,
+      "faithfulness": 1.0,
+      "faithfulness_details": [],
+      "coverage": 1.0,
+      "coverage_details": {
+        "answerable": false,
+        "abstained": true,
+        "extraction_failed": false,
+        "reason": "parse_error"
+      },
+      "final_score": 1.0
+    },
+    {
+      "question": "Summarize the LangChain docs section on retrieval in 5 key bullet points.",
+      "answer": "I don't know.",
+      "claims": [],
+      "claim_extraction_failed": false,
+      "faithfulness": 1.0,
+      "faithfulness_details": [],
+      "coverage": 1.0,
+      "coverage_details": {
+        "answerable": false,
+        "abstained": true,
+        "extraction_failed": false,
+        "reason": "Context contains 404 errors and navigation menus, lacking actual retrieval documentation content."
+      },
+      "final_score": 1.0
+    },
+    {
+      "question": "Explain how FastAPI is typically used to deploy an LLM or RAG backend.",
+      "answer": "I don't know.",
+      "claims": [],
+      "claim_extraction_failed": false,
+      "faithfulness": 1.0,
+      "faithfulness_details": [],
+      "coverage": 1.0,
+      "coverage_details": {
+        "answerable": false,
+        "abstained": true,
+        "extraction_failed": false,
+        "reason": "Context mentions general deployment but lacks specific details on LLM or RAG backends."
+      },
+      "final_score": 1.0
+    },
+    {
+      "question": "What are the main differences between Chroma and FAISS for vector search?",
+      "answer": "I don't know.",
+      "claims": [],
+      "claim_extraction_failed": false,
+      "faithfulness": 1.0,
+      "faithfulness_details": [],
+      "coverage": 1.0,
+      "coverage_details": {
+        "answerable": false,
+        "abstained": true,
+        "extraction_failed": false,
+        "reason": "Context only describes FAISS; no information about Chroma is provided."
+      },
+      "final_score": 1.0
+    },
+    {
+      "question": "How can metadata filtering improve retrieval results in a vector store?",
+      "answer": "I don't know.",
+      "claims": [],
+      "claim_extraction_failed": false,
+      "faithfulness": 1.0,
+      "faithfulness_details": [],
+      "coverage": 1.0,
+      "coverage_details": {
+        "answerable": false,
+        "abstained": true,
+        "extraction_failed": false,
+        "reason": "Context does not mention metadata filtering or its impact on retrieval results."
+      },
+      "final_score": 1.0
+    },
+    {
+      "question": "Give an example of a question that should be marked as unanswerable if the document context is missing.",
+      "answer": "An example would be:  \n\n**\u201cWhat is the title of the first machine\u2011generated science book?\u201d**  \n\nWithout the document that mentions the book (Beta Writer, Lithium\u2011Ion Batteries, Springer, Cham, 2019), this question could not be answered.",
+      "claims": [
+        {
+          "id": 1,
+          "text": "The document mentions a book titled 'Lithium-Ion Batteries'."
+        },
+        {
+          "id": 2,
+          "text": "The book 'Lithium-Ion Batteries' was published by Springer."
+        },
+        {
+          "id": 3,
+          "text": "The book 'Lithium-Ion Batteries' was published in Cham."
+        },
+        {
+          "id": 4,
+          "text": "The book 'Lithium-Ion Batteries' was published in 2019."
+        },
+        {
+          "id": 5,
+          "text": "The book 'Lithium-Ion Batteries' is associated with Beta Writer."
+        }
+      ],
+      "claim_extraction_failed": false,
+      "faithfulness": 1.0,
+      "faithfulness_details": [
+        {
+          "claim": "The document mentions a book titled 'Lithium-Ion Batteries'.",
+          "supported": true,
+          "evidence": "The first machine-generated science book was published in 2019 (Beta Writer, Lithium-Ion Batteries, Springer, Cham)."
+        },
+        {
+          "claim": "The book 'Lithium-Ion Batteries' was published by Springer.",
+          "supported": true,
+          "evidence": "The first machine-generated science book was published in 2019 (Beta Writer, Lithium-Ion Batteries, Springer, Cham)."
+        },
+        {
+          "claim": "The book 'Lithium-Ion Batteries' was published in Cham.",
+          "supported": true,
+          "evidence": "The first machine-generated science book was published in 2019 (Beta Writer, Lithium-Ion Batteries, Springer, Cham)."
+        },
+        {
+          "claim": "The book 'Lithium-Ion Batteries' was published in 2019.",
+          "supported": true,
+          "evidence": "The first machine-generated science book was published in 2019 (Beta Writer, Lithium-Ion Batteries, Springer, Cham)."
+        },
+        {
+          "claim": "The book 'Lithium-Ion Batteries' is associated with Beta Writer.",
+          "supported": true,
+          "evidence": "The first machine-generated science book was published in 2019 (Beta Writer, Lithium-Ion Batteries, Springer, Cham)."
+        }
+      ],
+      "coverage": 1.0,
+      "coverage_details": {
+        "answerable": false,
+        "abstained": false,
+        "extraction_failed": false,
+        "reason": "Context lists NLP tasks but does not provide examples of unanswerable questions."
+      },
+      "final_score": 1.0
+    },
+    {
+      "question": "Based on the uploaded documents, what exact chunk contains the definition of RAG?",
+      "answer": "The chunk that defines RAG is:\n\n**\u201cRAG is a way of improving LLM performance, in essence by blending the LLM process with a web search or other document look\u2011up process to help LLMs stick to the facts.\u201d**",
+      "claims": [
+        {
+          "id": 1,
+          "text": "RAG is a way of improving LLM performance."
+        },
+        {
+          "id": 2,
+          "text": "RAG blends the LLM process with a web search or other document look-up process."
+        },
+        {
+          "id": 3,
+          "text": "RAG helps LLMs stick to the facts."
+        }
+      ],
+      "claim_extraction_failed": false,
+      "faithfulness": 1.0,
+      "faithfulness_details": [
+        {
+          "claim": "RAG is a way of improving LLM performance.",
+          "supported": true,
+          "evidence": "RAG is a way of improving LLM performance"
+        },
+        {
+          "claim": "RAG blends the LLM process with a web search or other document look-up process.",
+          "supported": true,
+          "evidence": "blending the LLM process with a web search or other document look-up process"
+        },
+        {
+          "claim": "RAG helps LLMs stick to the facts.",
+          "supported": true,
+          "evidence": "to help LLMs stick to the facts"
+        }
+      ],
+      "coverage": 1.0,
+      "coverage_details": {
+        "answerable": false,
+        "abstained": false,
+        "extraction_failed": false,
+        "reason": "Context lacks specific chunk identifiers or labels to identify the exact chunk."
+      },
+      "final_score": 1.0
+    },
+    {
+      "question": "What is the exact training dataset used for sentence-transformers/all-MiniLM-L6-v2 in your system?",
+      "answer": "I don't know.",
+      "claims": [],
+      "claim_extraction_failed": false,
+      "faithfulness": 1.0,
+      "faithfulness_details": [],
+      "coverage": 1.0,
+      "coverage_details": {
+        "answerable": false,
+        "abstained": true,
+        "extraction_failed": false,
+        "reason": "Context does not mention sentence-transformers/all-MiniLM-L6-v2 or its specific training dataset."
+      },
+      "final_score": 1.0
+    },
+    {
+      "question": "What is Sahib Taj Singh Groq API key?",
+      "answer": "I don't know.",
+      "claims": [],
+      "claim_extraction_failed": false,
+      "faithfulness": 1.0,
+      "faithfulness_details": [],
+      "coverage": 1.0,
+      "coverage_details": {
+        "answerable": false,
+        "abstained": true,
+        "extraction_failed": false,
+        "reason": "The context contains no information about Sahib Taj Singh or any API keys."
+      },
+      "final_score": 1.0
+    },
+    {
+      "question": "What is written on page 37 of the uploaded PDF?",
+      "answer": "I don't know.",
+      "claims": [],
+      "claim_extraction_failed": false,
+      "faithfulness": 1.0,
+      "faithfulness_details": [],
+      "coverage": 1.0,
+      "coverage_details": {
+        "answerable": false,
+        "abstained": true,
+        "extraction_failed": false,
+        "reason": "Context contains no PDF or page 37 content."
+      },
+      "final_score": 1.0
+    },
+    {
+      "question": "Which specific paragraph in the documents proves that Mars currently has large stable lakes of liquid water?",
+      "answer": "I don't know.",
+      "claims": [],
+      "claim_extraction_failed": false,
+      "faithfulness": 1.0,
+      "faithfulness_details": [],
+      "coverage": 1.0,
+      "coverage_details": {
+        "answerable": false,
+        "abstained": true,
+        "extraction_failed": false,
+        "reason": "Context contains no information about Mars or liquid water."
+      },
+      "final_score": 1.0
+    }
+  ],
+  "gate": {
+    "status": "blocked",
+    "reason": "Baseline dataset mismatch",
+    "failures": [],
+    "warnings": [],
+    "dataset_differences": {
+      "missing_from_current": [
+        "When should you use a smaller chunk size vs a larger chunk size in RAG?"
+      ],
+      "new_in_current": [
+        "When should you use a smaller ch unk size vs a larger chunk size in RAG?"
+      ]
+    }
+  }
+}

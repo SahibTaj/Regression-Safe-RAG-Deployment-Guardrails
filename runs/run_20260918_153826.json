@@ -1,0 +1,69 @@
+{
+  "metadata": {
+    "answer_model": "openai/gpt-oss-120b",
+    "eval_model": "qwen/qwen3.8-27b",
+    "timestamp": "2026-09-18T15:38:26.593266"
+  },
+  "results": [
+    {
+      "question": "What is retrieval augmented generation (RAG) and why is it used?",
+      "faithfulness": 0.9285714285714286,
+      "coverage": 1.0,
+      "coverage_details": {
+        "answerable": true,
+        "abstained": false,
+        "extraction_failed": false,
+        "reason": "Context defines RAG and lists reasons like accessing new data and reducing hallucinations."
+      },
+      "final_score": 0.95
+    },
+    {
+      "question": "Explain how embeddings help in semantic search.",
+      "faithfulness": 0.8,
+      "coverage": 1.0,
+      "coverage_details": {
+        "answerable": true,
+        "abstained": false,
+        "extraction_failed": false,
+        "reason": "Context explains vector databases use embeddings for semantic search via approximate nearest neighbor algorithms."
+      },
+      "final_score": 0.8599999999999999
+    },
+    {
+      "question": "What is cosine similarity and why is it commonly used with embeddings?",
+      "faithfulness": 0.8666666666666667,
+      "coverage": 1.0,
+      "coverage_details": {
+        "answerable": false,
+        "abstained": false,
+        "extraction_failed": false,
+        "reason": "Context defines cosine similarity but does not mention embeddings or why it is used with them."
+      },
+      "final_score": 0.9066666666666667
+    },
+    {
+      "question": "What is the role of a vector database in a RAG pipeline?",
+      "faithfulness": 0.875,
+      "coverage": 1.0,
+      "coverage_details": {
+        "answerable": true,
+        "abstained": false,
+        "extraction_failed": false,
+        "reason": "Context states vector databases store embeddings to allow document retrieval for RAG."
+      },
+      "final_score": 0.9124999999999999
+    },
+    {
+      "question": "What is FAISS and what problem does it solve?",
+      "faithfulness": 0.8888888888888888,
+      "coverage": 1.0,
+      "coverage_details": {
+        "answerable": true,
+        "abstained": false,
+        "extraction_failed": false,
+        "reason": "Context defines FAISS as a library for similarity search and clustering of vectors."
+      },
+      "final_score": 0.922222222222222
+    }
+  ]
+}
